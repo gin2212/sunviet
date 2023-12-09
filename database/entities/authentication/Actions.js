@@ -1,21 +1,24 @@
-require('../../database');
-const mongoose = require('mongoose');
+require("../../database");
+const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
-let actionSchema = new Schema({
+let actionSchema = new Schema(
+  {
     actionName: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      required: true,
+      unique: true,
     },
     createdTime: {
-        type: Date,
-        default: Date.now
+      type: Date,
+      default: Date.now,
     },
     updatedTime: {
-        type: Date
-    }
-}, {versionKey: false});
+      type: Date,
+    },
+  },
+  { versionKey: false }
+);
 
-module.exports = mongoose.model('Actions', actionSchema)
+module.exports = mongoose.model("Actions", actionSchema);

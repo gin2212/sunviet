@@ -15,7 +15,7 @@ async function createProject(req, res) {
 
     await project.save();
 
-    let response = new ResponseModel(1, 'Create project success!', project);
+    let response = new ResponseModel(1, "Create project success!", project);
     res.json(response);
   } catch (error) {
     let response = new ResponseModel(404, error.message, error);
@@ -51,7 +51,12 @@ async function updateProject(req, res) {
 
     let updatedProject = await Projects.findOneAndUpdate(
       { _id: req.params.id },
-      { projectName, description, updatedTime: Date.now(), updatedBy: req.userId },
+      {
+        projectName,
+        description,
+        updatedTime: Date.now(),
+        updatedBy: req.userId,
+      },
       { new: true }
     );
 
@@ -59,7 +64,11 @@ async function updateProject(req, res) {
       let response = new ResponseModel(0, "No item found!", null);
       res.json(response);
     } else {
-      let response = new ResponseModel(1, "Update project success!", updatedProject);
+      let response = new ResponseModel(
+        1,
+        "Update project success!",
+        updatedProject
+      );
       res.json(response);
     }
   } catch (error) {
@@ -94,7 +103,9 @@ async function getPagingProjects(req, res) {
 
     let searchObj = {};
     if (req.query.search) {
-      searchObj = { projectName: { $regex: ".*" + req.query.search + ".*", $options: 'i' } };
+      searchObj = {
+        projectName: { $regex: ".*" + req.query.search + ".*", $options: "i" },
+      };
     }
 
     let projects = await Projects.find(searchObj)
@@ -106,11 +117,11 @@ async function getPagingProjects(req, res) {
 
     let count = await Projects.find(searchObj).countDocuments();
     let totalPages = Math.ceil(count / pageSize);
-    let response = new ResponseModel(1, 'Get paging projects success!', {
+    let response = new ResponseModel(1, "Get paging projects success!", {
       pageIndex,
       pageSize,
       totalPages,
-      projects
+      projects,
     });
     res.json(response);
   } catch (error) {

@@ -14,7 +14,11 @@ async function createApprovalProcess(req, res) {
 
     await approvalProcess.save();
 
-    let response = new ResponseModel(1, 'Create approval process success!', approvalProcess);
+    let response = new ResponseModel(
+      1,
+      "Create approval process success!",
+      approvalProcess
+    );
     res.json(response);
   } catch (error) {
     let response = new ResponseModel(404, error.message, error);
@@ -34,7 +38,7 @@ async function createApprovalStep(req, res) {
 
     const approvalProcess = await ApprovalProcess.findById(processId);
     if (!approvalProcess) {
-      let response = new ResponseModel(0, 'Approval process not found!', null);
+      let response = new ResponseModel(0, "Approval process not found!", null);
       return res.json(response);
     }
 
@@ -42,7 +46,11 @@ async function createApprovalStep(req, res) {
 
     await approvalProcess.save();
 
-    let response = new ResponseModel(1, 'Create approval step success!', approvalStep);
+    let response = new ResponseModel(
+      1,
+      "Create approval step success!",
+      approvalStep
+    );
     res.json(response);
   } catch (error) {
     let response = new ResponseModel(404, error.message, error);
@@ -71,7 +79,9 @@ async function getApprovalProcessById(req, res) {
       res.status(404).json(404, error.message, error);
     }
   } else {
-    res.status(404).json(new ResponseModel(404, "ApprovalProcessId is not valid!", null));
+    res
+      .status(404)
+      .json(new ResponseModel(404, "ApprovalProcessId is not valid!", null));
   }
 }
 
@@ -90,7 +100,11 @@ async function updateApprovalProcess(req, res) {
       let response = new ResponseModel(0, "No item found!", null);
       res.json(response);
     } else {
-      let response = new ResponseModel(1, "Update approval process success!", updatedApprovalProcess);
+      let response = new ResponseModel(
+        1,
+        "Update approval process success!",
+        updatedApprovalProcess
+      );
       res.json(response);
     }
   } catch (error) {
@@ -102,13 +116,19 @@ async function updateApprovalProcess(req, res) {
 // Xóa Quy trình duyệt
 async function deleteApprovalProcess(req, res) {
   try {
-    const approvalProcess = await ApprovalProcess.findByIdAndDelete(req.params.id);
+    const approvalProcess = await ApprovalProcess.findByIdAndDelete(
+      req.params.id
+    );
 
     if (!approvalProcess) {
       let response = new ResponseModel(0, "No item found!", null);
       res.json(response);
     } else {
-      let response = new ResponseModel(1, "Delete approval process success!", null);
+      let response = new ResponseModel(
+        1,
+        "Delete approval process success!",
+        null
+      );
       res.json(response);
     }
   } catch (error) {
@@ -124,7 +144,7 @@ async function getApprovalProcessSteps(req, res) {
   try {
     const approvalProcess = await ApprovalProcess.findById(processId);
     if (!approvalProcess) {
-      let response = new ResponseModel(0, 'Approval process not found!', null);
+      let response = new ResponseModel(0, "Approval process not found!", null);
       return res.json(response);
     }
 

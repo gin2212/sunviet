@@ -1,7 +1,7 @@
 const { isValidObjectId } = require("mongoose");
 const Roles = require("../database/entities/authentication/Roles");
 const Users = require("../database/entities/authentication/Users");
-const roleAction = require("../database/entities/authentication/RoleActions")
+const roleAction = require("../database/entities/authentication/RoleActions");
 const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
 

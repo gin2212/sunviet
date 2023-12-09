@@ -1,5 +1,6 @@
+// documentRoutes.js
 const express = require("express");
-const proposalController = require("../controllers/proposalController");
+const documentController = require("../controllers/documentController");
 const router = express.Router();
 const middlewares = require("./middlewares");
 const multer = require("multer");
@@ -30,36 +31,36 @@ let upload = multer({
 let uploadFile = upload.single("file");
 
 router.post(
-  "/proposals/create",
+  "/documents/create",
   middlewares.authorize,
   uploadFile,
-  proposalController.createProposal
+  documentController.createDocument
 );
 router.get(
-  "/proposals/getAll",
+  "/documents/getAll",
   middlewares.authorize,
-  proposalController.getAllProposals
+  documentController.getAllDocuments
 );
 router.get(
-  "/proposals/getById/:id",
+  "/documents/getById/:id",
   middlewares.authorize,
-  proposalController.getProposalById
+  documentController.getDocumentById
 );
 router.put(
-  "/proposals/update/:id",
+  "/documents/update/:id",
   middlewares.authorize,
   uploadFile,
-  proposalController.updateProposal
+  documentController.updateDocument
 );
 router.delete(
-  "/proposals/delete/:id",
+  "/documents/delete/:id",
   middlewares.authorize,
-  proposalController.deleteProposal
+  documentController.deleteDocument
 );
 router.get(
-  "/proposals/getPaging",
+  "/documents/getPaging",
   middlewares.authorize,
-  proposalController.getPagingProposals
+  documentController.getPagingDocuments
 );
 
 module.exports = router;

@@ -49,7 +49,7 @@ async function createRoleAction(req, res) {
 }
 
 async function createRoleActions(req, res) {
-  console.log("test")
+  console.log("test");
   if (req.actions.includes("createRoleActions")) {
     try {
       let role = await Roles.findById(req.body.role);
@@ -87,11 +87,7 @@ async function createRoleActions(req, res) {
             res.json(response);
           }
         } else {
-          let response = new ResponseModel(
-            1,
-            "Create roleaction success!",
-            []
-          );
+          let response = new ResponseModel(1, "Create roleaction success!", []);
 
           res.json(response);
         }
@@ -101,7 +97,7 @@ async function createRoleActions(req, res) {
           .json(new ResponseModel(404, "Role was not found", null));
       }
     } catch (error) {
-      console.log("test")
+      console.log("test");
       let response = new ResponseModel(404, error.message, error);
       res.status(404).json(response);
     }

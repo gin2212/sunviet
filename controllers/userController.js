@@ -9,9 +9,7 @@ const secretKey = process.env.SECRET_KEY;
 
 async function login(req, res) {
   try {
-    let user = await Users.findOne({ email: req.body.email }).populate(
-      "role"
-    );
+    let user = await Users.findOne({ email: req.body.email }).populate("role");
     if (user) {
       if (user.activeStatus === 1) {
         if (

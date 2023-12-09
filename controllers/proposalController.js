@@ -1,13 +1,13 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 const Proposals = require("../database/entities/Proposal");
 const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadPath = path.join(__dirname, '../public/upload/files');
+    const uploadPath = path.join(__dirname, "../public/upload/files");
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + path.extname(file.originalname));
-  }
+  },
 });
 
 const upload = multer({ storage: storage });
@@ -46,7 +46,11 @@ async function createProposal(req, res) {
       // Lưu đề xuất vào cơ sở dữ liệu
       await proposal.save();
 
-      let response = new ResponseModel(1, 'Create proposal with file success!', proposal);
+      let response = new ResponseModel(
+        1,
+        "Create proposal with file success!",
+        proposal
+      );
       res.json(response);
     } else {
       // Nếu không có file upload
@@ -59,7 +63,7 @@ async function createProposal(req, res) {
       // Lưu đề xuất vào cơ sở dữ liệu
       await proposal.save();
 
-      let response = new ResponseModel(1, 'Create proposal success!', proposal);
+      let response = new ResponseModel(1, "Create proposal success!", proposal);
       res.json(response);
     }
   } catch (error) {
@@ -89,7 +93,9 @@ async function getProposalById(req, res) {
       res.status(404).json(404, error.message, error);
     }
   } else {
-    res.status(404).json(new ResponseModel(404, "ProposalId is not valid!", null));
+    res
+      .status(404)
+      .json(new ResponseModel(404, "ProposalId is not valid!", null));
   }
 }
 
@@ -108,7 +114,11 @@ async function updateProposal(req, res) {
       let response = new ResponseModel(0, "No item found!", null);
       res.json(response);
     } else {
-      let response = new ResponseModel(1, "Update proposal success!", updatedProposal);
+      let response = new ResponseModel(
+        1,
+        "Update proposal success!",
+        updatedProposal
+      );
       res.json(response);
     }
   } catch (error) {
@@ -143,7 +153,9 @@ async function getPagingProposals(req, res) {
 
     let searchObj = {};
     if (req.query.search) {
-      searchObj = { title: { $regex: ".*" + req.query.search + ".*", $options: 'i' } };
+      searchObj = {
+        title: { $regex: ".*" + req.query.search + ".*", $options: "i" },
+      };
     }
 
     let proposals = await Proposals.find(searchObj)

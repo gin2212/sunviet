@@ -6,7 +6,8 @@ const ResponseModel = require("../models/ResponseModel");
 
 async function createDepartment(req, res) {
   try {
-    const { departmentName, description, project, createdBy, updatedBy } = req.body;
+    const { departmentName, description, project, createdBy, updatedBy } =
+      req.body;
 
     let department = new Departments({
       departmentName,
@@ -18,7 +19,11 @@ async function createDepartment(req, res) {
 
     await department.save();
 
-    let response = new ResponseModel(1, 'Create department success!', department);
+    let response = new ResponseModel(
+      1,
+      "Create department success!",
+      department
+    );
     res.json(response);
   } catch (error) {
     let response = new ResponseModel(404, error.message, error);
@@ -40,7 +45,11 @@ async function updateDepartment(req, res) {
       let response = new ResponseModel(0, "No item found!", null);
       res.json(response);
     } else {
-      let response = new ResponseModel(1, "Update department success!", updatedDepartment);
+      let response = new ResponseModel(
+        1,
+        "Update department success!",
+        updatedDepartment
+      );
       res.json(response);
     }
   } catch (error) {
@@ -83,7 +92,12 @@ async function getPagingDepartments(req, res) {
 
     let searchObj = {};
     if (req.query.search) {
-      searchObj = { departmentName: { $regex: ".*" + req.query.search + ".*", $options: 'i' } };
+      searchObj = {
+        departmentName: {
+          $regex: ".*" + req.query.search + ".*",
+          $options: "i",
+        },
+      };
     }
 
     let departments = await Departments.find(searchObj)
@@ -95,7 +109,12 @@ async function getPagingDepartments(req, res) {
 
     let count = await Departments.find(searchObj).countDocuments();
     let totalPages = Math.ceil(count / pageSize);
-    let pagedModel = new PagedModel(pageIndex, pageSize, totalPages, departments);
+    let pagedModel = new PagedModel(
+      pageIndex,
+      pageSize,
+      totalPages,
+      departments
+    );
     res.json(pagedModel);
   } catch (error) {
     let response = new ResponseModel(404, error.message, error);
@@ -112,7 +131,9 @@ async function getDepartmentById(req, res) {
       res.status(404).json(404, error.message, error);
     }
   } else {
-    res.status(404).json(new ResponseModel(404, "DepartmentId is not valid!", null));
+    res
+      .status(404)
+      .json(new ResponseModel(404, "DepartmentId is not valid!", null));
   }
 }
 
