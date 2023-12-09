@@ -1,8 +1,8 @@
 {
-    "name": "jwt-nodejs",
-    "version": "1.0.0",
-    "description": "",
-    "main": "server.js",
+  "name": "jwt-nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "server": "nodemon server.js",
@@ -13,31 +13,32 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
-    "repository": {
-      "type": "git",
-      "url": "git+https://github.com/nmh265/jwt-nodejs.git"
-    },
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-      "url": "https://github.com/nmh265/jwt-nodejs/issues"
-    },
-    "homepage": "https://github.com/nmh265/jwt-nodejs#readme",
-    "dependencies": {
-      "axios": "^0.27.2",
-      "body-parser": "^1.19.0",
-      "cors": "^2.8.5",
-      "dotenv": "^10.0.0",
-      "express": "^4.17.1",
-      "jsonwebtoken": "^8.5.1",
-      "mongoose": "^6.0.14",
-      "multer": "^1.4.5-lts.1",
-      "node-cron": "^3.0.2",
-      "redis": "^4.6.7",
-      "validator": "^13.7.0"
-    },
-    "devDependencies": {
-      "morgan": "^1.10.0",
-      "nodemon": "^2.0.15"
-    }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nmh265/jwt-nodejs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nmh265/jwt-nodejs/issues"
+  },
+  "homepage": "https://github.com/nmh265/jwt-nodejs#readme",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "body-parser": "^1.19.0",
+    "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.0.14",
+    "multer": "^1.4.5-lts.1",
+    "node-cron": "^3.0.2",
+    "redis": "^4.6.7",
+    "validator": "^13.7.0"
+  },
+  "devDependencies": {
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.15"
   }
+}
