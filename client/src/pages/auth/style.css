@@ -1,0 +1,116 @@
+.main {
+  display: flex;
+  align-items: center;
+  position: relative;
+  background: linear-gradient(360deg, #ffefdd 0%, rgba(255, 255, 255, 0) 100%) no-repeat;
+}
+
+.logo {
+  position: absolute;
+  left: 0;
+  width: 200px;
+  margin: 15px;
+}
+
+.banner {
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  background-color: rgb(238, 231, 231);
+}
+
+.banner-login {
+  width: 70%;
+}
+
+.right {
+  width: 40%;
+}
+
+.sign-in-form {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 30px;
+}
+
+.title {
+  font-size: 30px;
+  margin-bottom: 30px;
+  font-weight: 500;
+}
+
+.custom-button {
+  font-weight: 400;
+}
+
+.custom-button:hover {
+  border-color: rgb(238, 231, 231) !important;
+}
+
+.custom-button:active {
+  border-color: rgb(238, 231, 231) !important;
+}
+
+.custom-button:focus-within {
+  border-color: rgb(218, 211, 211) !important;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #ffa827;
+  border-color: #ffa827;
+}
+
+.ps-active {
+  background-color: #ff9900;
+  color: #fff;
+  border-radius: 8px;
+  transition: all 0.5s ease;
+}
+
+.ps-menu-button:hover {
+  background-color: transparent !important;
+}
+
+.ant-input-group-addon button {
+  background-color: #ad97e3 !important;
+}
+
+.ant-layout-sider-dark {
+  background-color: #303030 !important;
+  transition: width 0.1s ease;
+  transition: all 0.5s ease;
+}
+
+.custom-menu {
+  color: #fff;
+  box-sizing: border-box;
+  width: 90% !important;
+  margin: 0 auto;
+  border-radius: 8px;
+  margin: 3px auto;
+  transition: all 0.3s ease;
+}
+
+.custom-menu:hover {
+  background-color: #ff9900;
+}
+
+.ps-menu-icon {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.logo-vertical {
+  width: 70%;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.ant-btn-primary.btn-modal {
+  color: #fff;
+  background-color: #1677ff !important;
+}
