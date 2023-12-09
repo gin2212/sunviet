@@ -1,6 +1,3 @@
-// documentController.js
-require("../database");
-const mongoose = require("mongoose");
 const { isValidObjectId } = require("mongoose");
 const Documents = require("../database/entities/Documents");
 const PagedModel = require("../models/PagedModel");

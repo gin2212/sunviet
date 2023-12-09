@@ -1,8 +1,6 @@
 require("../database");
 const mongoose = require("mongoose");
 
-const mongoose = require("mongoose");
-
 const approvalStepSchema = new mongoose.Schema({
   stepName: { type: String, required: true },
   approvers: [
