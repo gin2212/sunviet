@@ -5,15 +5,12 @@ const ResponseModel = require("../models/ResponseModel");
 
 async function createDocument(req, res) {
   try {
-    const { title, file, content, department, createdBy } = req.body;
+    let document = new Documents(req.body);
+    document.createdBy = req.userId;
 
-    const document = new Documents({
-      title,
-      file,
-      content,
-      department,
-      createdBy,
-    });
+    if (req?.file) {
+      document.file = `public/files/${req.file.filename}`;
+    }
 
     await document.save();
 
@@ -58,12 +55,19 @@ async function getDocumentById(req, res) {
 
 async function updateDocument(req, res) {
   try {
-    const { title, file, content, department } = req.body;
+    let newDocument = {
+      updatedTime: Date.now(),
+      updatedBy: req.userId,
+      ...req.body,
+    };
+
+    if (req?.file) {
+      newDocument.file = `public/files/${req.file.filename}`;
+    }
 
     const updatedDocument = await Documents.findOneAndUpdate(
       { _id: req.params.id },
-      { title, file, content, department },
-      { new: true }
+      newDocument
     );
 
     if (!updatedDocument) {

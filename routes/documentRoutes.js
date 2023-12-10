@@ -7,15 +7,15 @@ const multer = require("multer");
 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    if (fs.existsSync(`public/files/${req.body.userId}`)) {
-      cb(null, `public/files/${req.body.userId}`);
+    if (fs.existsSync(`public/files/${req.userId}`)) {
+      cb(null, `public/files/${req.userId}`);
     } else {
-      fs.mkdir(`public/files/${req.body.userId}`, (err) => {
+      fs.mkdir(`public/files/${req.userId}`, (err) => {
         if (err) {
           return console.error(err);
         }
         console.log("Directory created successfully!");
-        cb(null, `public/files/${req.body.userId}`);
+        cb(null, `public/files/${req.userId}`);
       });
     }
   },

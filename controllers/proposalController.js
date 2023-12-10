@@ -6,42 +6,18 @@ const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
 async function createProposal(req, res) {
   try {
-    const { title, project, selectedApprovalProcess } = req.body;
-    if (req.file) {
-      const file = req.file;
-      const fileInfo = {
-        originalName: file.originalname,
-        fileName: file.filename,
-        path: file.path,
-      };
+    let proposal = new Proposals(req.body);
+    proposal.createdBy = req.userId;
 
-      const proposal = new Proposals({
-        title,
-        project,
-        selectedApprovalProcess,
-        file: fileInfo,
-      });
-
-      await proposal.save();
-
-      let response = new ResponseModel(
-        1,
-        "Create proposal with file success!",
-        proposal
-      );
-      res.json(response);
-    } else {
-      let proposal = new Proposals({
-        title,
-        project,
-        selectedApprovalProcess,
-      });
-
-      await proposal.save();
-
-      let response = new ResponseModel(1, "Create proposal success!", proposal);
-      res.json(response);
+    if (req?.file) {
+      proposal.file = `public/files/${req.file.filename}`;
     }
+
+    await proposal.save();
+
+    let response = new ResponseModel(1, "Create proposal success!", proposal);
+
+    res.json(response);
   } catch (error) {
     let response = new ResponseModel(404, error.message, error);
     res.status(404).json(response);
@@ -75,12 +51,18 @@ async function getProposalById(req, res) {
 
 async function updateProposal(req, res) {
   try {
-    const { title, project, selectedApprovalProcess } = req.body;
+    let newProposal = {
+      updatedTime: Date.now(),
+      updatedBy: req.userId,
+      ...req.body,
+    };
 
-    let updatedProposal = await Proposals.findOneAndUpdate(
+    if (req?.file) {
+      newProposal.file = `public/files/${req.file.filename}`;
+    }
+    let updatedProposal = await Departments.findOneAndUpdate(
       { _id: req.params.id },
-      { title, project, selectedApprovalProcess },
-      { new: true }
+      newProposal
     );
 
     if (!updatedProposal) {
