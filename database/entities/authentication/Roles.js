@@ -5,15 +5,21 @@ const { Schema } = mongoose;
 
 let roleSchema = new Schema(
   {
-    releCode: {
-      type: String,
-      required: true,
-      unique: true,
-    },
     roleName: {
       type: String,
       required: true,
       unique: true,
+    },
+    actions: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Actions",
+      },
+    ],
+    roleIndex: {
+      type: Number,
+      require: true,
+      default: 99,
     },
     createdTime: {
       type: Date,

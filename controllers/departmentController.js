@@ -6,16 +6,8 @@ const ResponseModel = require("../models/ResponseModel");
 
 async function createDepartment(req, res) {
   try {
-    const { departmentName, description, project, createdBy, updatedBy } =
-      req.body;
-
-    let department = new Departments({
-      departmentName,
-      description,
-      project,
-      createdBy,
-      updatedBy,
-    });
+    let department = new Departments(req.body);
+    department.createdBy = req.userId;
 
     await department.save();
 
@@ -33,12 +25,15 @@ async function createDepartment(req, res) {
 
 async function updateDepartment(req, res) {
   try {
-    const { departmentName, description, project, updatedBy } = req.body;
+    const newDepartment = {
+      updatedTime: Date.now(),
+      updatedBy: req.userId,
+      ...req.body,
+    };
 
     let updatedDepartment = await Departments.findOneAndUpdate(
       { _id: req.params.id },
-      { departmentName, description, project, updatedBy },
-      { new: true }
+      newDepartment
     );
 
     if (!updatedDepartment) {
@@ -105,7 +100,8 @@ async function getPagingDepartments(req, res) {
       .limit(parseInt(pageSize))
       .sort({
         createdTime: "desc",
-      });
+      })
+      .populate("createdBy", "fullName");
 
     let count = await Departments.find(searchObj).countDocuments();
     let totalPages = Math.ceil(count / pageSize);

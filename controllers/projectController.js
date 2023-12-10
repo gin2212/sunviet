@@ -1,17 +1,12 @@
 const Projects = require("../database/entities/Project");
+const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
 
 // Tạo project mới
 async function createProject(req, res) {
   try {
-    const { projectName, description } = req.body;
-    const createdBy = req.userId;
-
-    const project = new Projects({
-      projectName,
-      description,
-      createdBy,
-    });
+    const project = new Projects(req.body);
+    project.createdBy = req.userId;
 
     await project.save();
 
@@ -47,17 +42,15 @@ async function getProjectById(req, res) {
 // Cập nhật thông tin project
 async function updateProject(req, res) {
   try {
-    const { projectName, description } = req.body;
+    const newProject = {
+      updatedTime: Date.now(),
+      updatedBy: req.userId,
+      ...req.body,
+    };
 
     let updatedProject = await Projects.findOneAndUpdate(
       { _id: req.params.id },
-      {
-        projectName,
-        description,
-        updatedTime: Date.now(),
-        updatedBy: req.userId,
-      },
-      { new: true }
+      newProject
     );
 
     if (!updatedProject) {
@@ -113,17 +106,14 @@ async function getPagingProjects(req, res) {
       .limit(parseInt(pageSize))
       .sort({
         createdTime: "desc",
-      });
+      })
+      .populate("createdBy", "fullName")
+      .populate("department", "departmentName");
 
     let count = await Projects.find(searchObj).countDocuments();
     let totalPages = Math.ceil(count / pageSize);
-    let response = new ResponseModel(1, "Get paging projects success!", {
-      pageIndex,
-      pageSize,
-      totalPages,
-      projects,
-    });
-    res.json(response);
+    let pagedModel = new PagedModel(pageIndex, pageSize, totalPages, projects);
+    res.json(pagedModel);
   } catch (error) {
     let response = new ResponseModel(404, error.message, error);
     res.status(404).json(response);

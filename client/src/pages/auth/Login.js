@@ -10,17 +10,17 @@ export default function Login() {
 
   const onFinish = async (values) => {
     const res = await callLogin(values);
-    if (res?.data) {
-      localStorage.setItem("accessToken", res?.data?.token?.accessToken);
-      localStorage.setItem("data", JSON.stringify(res?.data));
-      message.success("Đăng nhập tài khoản thành công!");
+    if (res?.status === 1) {
+      localStorage.setItem("accessToken", res?.data?.token);
+      localStorage.setItem("data", JSON.stringify(res?.data.user));
+      message.success("Đăng nhập thành công!");
       navigate("/");
-    } else if (res?.statusCode === 422) {
+    } else if (res?.status === 2) {
       message.error("Sai mật khẩu!");
-    } else if (res?.statusCode === 404) {
+    } else if (res?.status === 3) {
+      message.error("Tài khoản đã bị khóa!");
+    } else if (res?.status === 4) {
       message.error("Người dùng không tồn tại!");
-    } else if (res?.statusCode === 400) {
-      message.error("Email không đúng định dạng!");
     }
   };
 

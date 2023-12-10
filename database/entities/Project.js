@@ -12,6 +12,7 @@ let projectsSchema = new Schema(
     description: {
       type: String,
     },
+    department: { type: Schema.Types.ObjectId, ref: "Departments" },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "Users",

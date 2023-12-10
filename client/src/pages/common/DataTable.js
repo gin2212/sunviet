@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Table, Pagination, Col, Row, Checkbox } from "antd";
-import Loading from "../../Layouts/Loading";
+import { Table, Pagination, Col, Row, Checkbox, Spin } from "antd";
 
 const DataTable = ({
   listData,
@@ -64,8 +63,8 @@ const DataTable = ({
   return (
     <>
       {loading ? (
-        <div className="w-full min-h-[70vh] flex items-center justify-center ">
-          <Loading />
+        <div className="loading-page ">
+          <Spin />
         </div>
       ) : (
         <div>

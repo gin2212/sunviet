@@ -4,32 +4,32 @@ const router = express.Router();
 const middlewares = require("./middlewares");
 
 router.post(
-  "/departments/create",
+  "/create",
   middlewares.authorize,
   departmentController.createDepartment
 );
 router.put(
-  "/departments/update/:id",
+  "/update/:id",
   middlewares.authorize,
   departmentController.updateDepartment
 );
 router.delete(
-  "/departments/delete/:id",
+  "/delete/:id",
   middlewares.authorize,
   departmentController.deleteDepartment
 );
 router.get(
-  "/departments/getAll",
+  "/getAll",
   middlewares.authorize,
   departmentController.getAllDepartments
 );
 router.get(
-  "/departments/getById/:id",
+  "/getById/:id",
   middlewares.authorize,
   departmentController.getDepartmentById
 );
 router.get(
-  "/departments/getPaging",
+  "/getPaging",
   middlewares.authorize,
   departmentController.getPagingDepartments
 );

@@ -12,12 +12,6 @@ let departmentSchema = new Schema(
     description: {
       type: String,
     },
-    project: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Projects",
-      },
-    ],
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "Users",

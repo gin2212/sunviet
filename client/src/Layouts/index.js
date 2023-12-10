@@ -22,7 +22,7 @@ const Index = ({ children }) => {
         style={{
           ...(!collapsed
             ? {
-                marginLeft: "230px",
+                marginLeft: "200px",
                 transition: "margin 0.2s",
               }
             : {
@@ -31,7 +31,11 @@ const Index = ({ children }) => {
               }),
         }}
       >
-        <Header collapsed={collapsed} setCollapsed={setCollapsed} />
+        <Header
+          style={{ margin: "24px 0" }}
+          collapsed={collapsed}
+          setCollapsed={setCollapsed}
+        />
 
         <Content
           style={{

@@ -1,34 +1,12 @@
-import React, { useEffect, useState } from "react";
-import {
-  UserOutlined,
-  HomeOutlined,
-  FolderOpenOutlined,
-  GlobalOutlined,
-  HistoryOutlined,
-  LinkOutlined,
-} from "@ant-design/icons";
+import React from "react";
+import { HomeOutlined } from "@ant-design/icons";
 import { Layout } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Menu, MenuItem } from "react-pro-sidebar";
 import logo from "../assets/images/logo.jpg";
-import { useLocation } from "react-router-dom";
-import { getAccountInfo } from "../services/api";
 
 const { Sider } = Layout;
 const Sidebar = ({ collapsed }) => {
-  const [userId, setUserId] = useState();
-  const location = useLocation();
-  const isDetailPage = /\/detail\//.test(location.pathname);
-
-  useEffect(() => {
-    getRoleId();
-  }, []);
-
-  const getRoleId = async () => {
-    let res = await getAccountInfo();
-    setUserId(res?.data?.roleId?.name);
-  };
-
   const navigate = useNavigate();
 
   const handlePage = (href) => {
@@ -40,7 +18,7 @@ const Sidebar = ({ collapsed }) => {
       trigger={null}
       collapsible
       collapsed={collapsed}
-      width={230}
+      width={200}
       style={{
         position: "fixed",
         left: 0,
@@ -61,50 +39,21 @@ const Sidebar = ({ collapsed }) => {
         >
           Trang chủ
         </MenuItem>
-
-        {userId === "user" ? null : (
-          <MenuItem
-            className="custom-menu font-medium text-[15px]"
-            active={window.location.pathname === "/users"}
-            icon={<UserOutlined />}
-            onClick={() => handlePage("/users")}
-          >
-            Quản lý User
-          </MenuItem>
-        )}
         <MenuItem
           className="custom-menu font-medium text-[15px]"
-          active={window.location.pathname === "/domain"}
-          icon={<GlobalOutlined />}
-          onClick={() => handlePage("/domain")}
+          active={window.location.pathname === "/department"}
+          icon={<HomeOutlined />}
+          onClick={() => handlePage("/department")}
         >
-          Danh sách Domain
-        </MenuItem>
-
-        <MenuItem
-          className={`custom-menu font-medium text-[15px] ${isDetailPage && "ps-active"
-            }`}
-          active={window.location.pathname === "/suggest"}
-          icon={<FolderOpenOutlined />}
-          onClick={() => handlePage("/suggest")}
-        >
-          Danh sách Đề Xuất
+          Phòng ban
         </MenuItem>
         <MenuItem
           className="custom-menu font-medium text-[15px]"
-          active={window.location.pathname === "/histories"}
-          icon={<HistoryOutlined />}
-          onClick={() => handlePage("/histories")}
+          active={window.location.pathname === "/project"}
+          icon={<HomeOutlined />}
+          onClick={() => handlePage("/project")}
         >
-          Lịch sử thao tác
-        </MenuItem>
-        <MenuItem
-          className="custom-menu font-medium text-[15px]"
-          active={window.location.pathname === "/notifies"}
-          icon={<LinkOutlined />}
-          onClick={() => handlePage("/notifies")}
-        >
-          Thông báo
+          Dự án
         </MenuItem>
       </Menu>
     </Sider>

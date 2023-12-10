@@ -1,56 +1,32 @@
-
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
   LockOutlined,
   RollbackOutlined,
-  BellOutlined,
 } from "@ant-design/icons";
-import {
-  Layout,
-  Button,
-  theme,
-  Avatar,
-  Dropdown,
-  message,
-  Form,
-  Menu,
-} from "antd";
+import { Layout, Button, theme, Avatar, Dropdown, message, Form } from "antd";
 import { useNavigate } from "react-router-dom";
-import { getAccountInfo, createNewPassword, getNotify } from "../services/api";
-import ModalViewInfo from "./Modal/ModalViewInfo";
-import ModalChangePass from "./Modal/ModalChangePass";
+import { getAccountInfo, createNewPassword } from "../services/api";
+// import ModalViewInfo from "./Modal/ModalViewInfo";
+// import ModalChangePass from "./Modal/ModalChangePass";
 
 const { Header } = Layout;
 
 const HeaderMain = ({ collapsed, setCollapsed }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const [userInfo, setUserInfo] = useState();
   const [isModalUser, setIsModalUser] = useState(false);
   const [isModalChangePass, setIsModalChangePass] = useState(false);
-  const [noti, setListNoti] = useState();
 
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  useEffect(() => {
-    handleInfoUser();
-    fetchDataNoti();
-  }, []);
-
   const handleLogout = () => {
     localStorage.clear();
     navigate("/login");
-  };
-
-  const handleInfoUser = async () => {
-    const res = await getAccountInfo();
-    setUserInfo(res?.data);
-    localStorage.setItem("role", res?.data?.roleId.name);
   };
 
   const handleShowModel = () => {
@@ -61,21 +37,15 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
     setIsModalChangePass(true);
   };
 
-  //Lấy danh sách thông báo để xử lý 29/11
-  const fetchDataNoti = async () => {
-    const res = await getNotify({ limit: 5 });
-    setListNoti(res?.data?.items);
-  };
-
   const onFinish = async (data) => {
-    const res = await createNewPassword(data);
-    if (res.statusCode === 200) {
-      message.success("Đổi mật khẩu thành công!");
-      setIsModalChangePass(false);
-      form.resetFields();
-    } else if (res.statusCode === 422) {
-      message.error("Đổi mật khẩu thất bại!");
-    }
+    // const res = await createNewPassword(data);
+    // if (res.statusCode === 200) {
+    //   message.success("Đổi mật khẩu thành công!");
+    //   setIsModalChangePass(false);
+    //   form.resetFields();
+    // } else if (res.statusCode === 422) {
+    //   message.error("Đổi mật khẩu thất bại!");
+    // }
   };
 
   const itemsSecondDropdown = [
@@ -104,8 +74,8 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
           background: colorBgContainer,
         }}
       >
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
+        <div className="header">
+          <div className="button-colspan">
             <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -117,7 +87,7 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
               }}
             />
           </div>
-          <div className="flex gap-2 mr-10">
+          <div className="user-info">
             <div>
               <Dropdown
                 menu={{
@@ -128,10 +98,10 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
                 <div onClick={(e) => e.preventDefault()}>
                   <div className="role">
                     <div className="text-white h-full">
-                      <div className="h-1/2 role-admin">
+                      {/* <div className="h-1/2 role-admin">
                         {userInfo?.roleId?.name}
                       </div>
-                      <div className="h-1/2 role-name">{userInfo?.name}</div>
+                      <div className="h-1/2 role-name">{userInfo?.name}</div> */}
                     </div>
                     <Avatar size="large" icon={<UserOutlined />} />
                   </div>
@@ -141,7 +111,7 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
           </div>
         </div>
       </Header>
-      <ModalViewInfo
+      {/* <ModalViewInfo
         isModalUser={isModalUser}
         setIsModalUser={setIsModalUser}
         userInfo={userInfo}
@@ -151,7 +121,7 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
         setIsModalChangePass={setIsModalChangePass}
         onFinish={onFinish}
         form={form}
-      />
+      /> */}
     </>
   );
 };

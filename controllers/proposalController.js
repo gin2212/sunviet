@@ -4,38 +4,17 @@ const fs = require("fs");
 const Proposals = require("../database/entities/Proposal");
 const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadPath = path.join(__dirname, "../public/upload/files");
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-    cb(null, uploadPath);
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({ storage: storage });
-
-// Tạo đề xuất mới với file upload
 async function createProposal(req, res) {
   try {
     const { title, project, selectedApprovalProcess } = req.body;
-
-    // Kiểm tra nếu có file upload
     if (req.file) {
       const file = req.file;
-      // Lưu thông tin file vào đối tượng đề xuất
       const fileInfo = {
         originalName: file.originalname,
         fileName: file.filename,
         path: file.path,
       };
 
-      // Thêm thông tin file vào đề xuất
       const proposal = new Proposals({
         title,
         project,
@@ -43,7 +22,6 @@ async function createProposal(req, res) {
         file: fileInfo,
       });
 
-      // Lưu đề xuất vào cơ sở dữ liệu
       await proposal.save();
 
       let response = new ResponseModel(
@@ -53,14 +31,12 @@ async function createProposal(req, res) {
       );
       res.json(response);
     } else {
-      // Nếu không có file upload
       let proposal = new Proposals({
         title,
         project,
         selectedApprovalProcess,
       });
 
-      // Lưu đề xuất vào cơ sở dữ liệu
       await proposal.save();
 
       let response = new ResponseModel(1, "Create proposal success!", proposal);
@@ -72,7 +48,6 @@ async function createProposal(req, res) {
   }
 }
 
-// Lấy tất cả đề xuất
 async function getAllProposals(req, res) {
   try {
     let proposals = await Proposals.find({});
@@ -83,7 +58,6 @@ async function getAllProposals(req, res) {
   }
 }
 
-// Lấy thông tin của một đề xuất
 async function getProposalById(req, res) {
   if (isValidObjectId(req.params.id)) {
     try {
@@ -99,7 +73,6 @@ async function getProposalById(req, res) {
   }
 }
 
-// Cập nhật đề xuất
 async function updateProposal(req, res) {
   try {
     const { title, project, selectedApprovalProcess } = req.body;
@@ -127,7 +100,6 @@ async function updateProposal(req, res) {
   }
 }
 
-// Xóa đề xuất
 async function deleteProposal(req, res) {
   try {
     const proposal = await Proposals.findByIdAndDelete(req.params.id);
@@ -145,7 +117,6 @@ async function deleteProposal(req, res) {
   }
 }
 
-// Lấy danh sách đề xuất theo trang
 async function getPagingProposals(req, res) {
   try {
     let pageSize = req.query.pageSize || 10;
