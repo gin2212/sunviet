@@ -20,11 +20,6 @@ const approvalStepSchema = new mongoose.Schema({
       timestamp: { type: Date, default: Date.now },
     },
   ],
-  status: {
-    type: String,
-    enum: ["Pending", "Approved", "Rejected"],
-    default: "Pending",
-  },
 });
 
 const approvalProcessSchema = new mongoose.Schema({

@@ -54,3 +54,33 @@ export const updateProject = (id, data) => {
 export const deleteProject = (id) => {
   return axios.delete(`api/project/delete/${id}`);
 };
+
+//ApprovalProcess
+export const getPagingApprovalProcess = (data) => {
+  return axios.get("api/approval-process/getPaging", data);
+};
+
+export const getAllApprovalProcess = () => {
+  return axios.get("api/approval-process/getAll");
+};
+
+export const getApprovalProcessId = (id) => {
+  return axios.get(`api/approval-process/getById/${id}`);
+};
+
+export const createApprovalProcess = (data) => {
+  return axios.post("api/approval-process/create", data);
+};
+
+export const updateApprovalProcess = (id, data) => {
+  return axios.put(`api/approval-process/update/${id}`, data);
+};
+
+export const deleteApprovalProcess = (id) => {
+  return axios.delete(`api/approval-process/delete/${id}`);
+};
+
+//User
+export const getAllUser = () => {
+  return axios.get("api/user/getAll");
+};

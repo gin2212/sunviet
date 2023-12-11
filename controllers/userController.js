@@ -143,12 +143,15 @@ async function getPaging(req, res) {
 }
 
 async function getAllUsers(req, res) {
-  if (req.actions.includes("getAllUsers")) {
-    const users = await Users.find({}).populate("role");
-    res.json(users);
-  } else {
-    res.sendStatus(403);
-  }
+  // if (req.actions.includes("getAllUsers")) {
+  //   const users = await Users.find({}).populate("role");
+  //   res.json(users);
+  // } else {
+  //   res.sendStatus(403);
+  // }
+
+  const users = await Users.find({}).populate("role");
+  res.json(users);
 }
 
 async function getUserById(req, res) {

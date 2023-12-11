@@ -74,9 +74,10 @@ const DataTable = ({
             pagination={false}
             rowSelection={selectedRowKeys ? rowSelection : null}
           />
-          <Row gutter={10} className="pagination ">
-            <Col span={24} className="mt-1 text-center">
+          <Row gutter={10} className="pagination">
+            <Col span={24} style={{ marginTop: 1, textAlign: "center" }}>
               <Pagination
+                style={{ display: "flex", justifyContent: "end" }}
                 className="flex justify-end "
                 showSizeChanger
                 pageSizeOptions={pageSizeOptions}

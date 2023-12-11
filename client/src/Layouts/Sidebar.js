@@ -55,6 +55,14 @@ const Sidebar = ({ collapsed }) => {
         >
           Dự án
         </MenuItem>
+        <MenuItem
+          className="custom-menu font-medium text-[15px]"
+          active={window.location.pathname === "/approval-process"}
+          icon={<HomeOutlined />}
+          onClick={() => handlePage("/approval-process")}
+        >
+          Quy trình
+        </MenuItem>
       </Menu>
     </Sider>
   );

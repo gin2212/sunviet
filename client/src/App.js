@@ -17,6 +17,7 @@ import Layouts from "./Layouts";
 import Home from "./pages/manager/Home";
 import Department from "./pages/manager/Department";
 import Project from "./pages/manager/Project";
+import Approval_Process from "./pages/manager/Approval_Process";
 
 function App() {
   return (
@@ -42,6 +43,10 @@ const MainLayout = () => {
         <Route
           path="/project"
           element={<PrivateRoute element={<Project />} />}
+        />
+        <Route
+          path="/approval-process"
+          element={<PrivateRoute element={<Approval_Process />} />}
         />
         <Route path={"*"} element={<Error />}></Route>
         <Route path="/error-403" element={<Error403 />}></Route>
