@@ -14,7 +14,6 @@ import {
   Select,
   Tag,
 } from "antd";
-import moment from "moment";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Col, Container, Row } from "reactstrap";
 import DataTable from "../common/DataTable";

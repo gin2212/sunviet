@@ -1,5 +1,6 @@
 const express = require("express");
 const proposalController = require("../controllers/proposalController");
+const approvalProcessController = require("../controllers/approvalProcessController");
 const router = express.Router();
 const middlewares = require("./middlewares");
 const multer = require("multer");
@@ -30,36 +31,53 @@ let upload = multer({
 let uploadFile = upload.single("file");
 
 router.post(
-  "/proposals/create",
+  "/create",
   middlewares.authorize,
   uploadFile,
   proposalController.createProposal
 );
 router.get(
-  "/proposals/getAll",
+  "/getAll",
   middlewares.authorize,
   proposalController.getAllProposals
 );
 router.get(
-  "/proposals/getById/:id",
+  "/getById/:id",
   middlewares.authorize,
   proposalController.getProposalById
 );
 router.put(
-  "/proposals/update/:id",
+  "/update/:id",
   middlewares.authorize,
   uploadFile,
   proposalController.updateProposal
 );
 router.delete(
-  "/proposals/delete/:id",
+  "/delete/:id",
   middlewares.authorize,
   proposalController.deleteProposal
 );
 router.get(
-  "/proposals/getPaging",
+  "/getPaging",
   middlewares.authorize,
   proposalController.getPagingProposals
+);
+
+// Endpoints cho việc duyệt, từ chối và thêm bình luận
+router.post(
+  "/approve/:proposalId",
+  middlewares.authorize,
+  proposalController.approveStep
+);
+router.post(
+  "/reject/:proposalId",
+  middlewares.authorize,
+  proposalController.rejectStep
+);
+router.post(
+  "/comment/:proposalId",
+  middlewares.authorize,
+  proposalController.addComment
 );
 
 module.exports = router;

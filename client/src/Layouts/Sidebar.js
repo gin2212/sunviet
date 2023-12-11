@@ -63,6 +63,22 @@ const Sidebar = ({ collapsed }) => {
         >
           Quy trình
         </MenuItem>
+        <MenuItem
+          className="custom-menu font-medium text-[15px]"
+          active={window.location.pathname === "/document"}
+          icon={<HomeOutlined />}
+          onClick={() => handlePage("/document")}
+        >
+          Tài liệu
+        </MenuItem>
+        <MenuItem
+          className="custom-menu font-medium text-[15px]"
+          active={window.location.pathname === "/role-action"}
+          icon={<HomeOutlined />}
+          onClick={() => handlePage("/role-action")}
+        >
+          Chức vụ
+        </MenuItem>
       </Menu>
     </Sider>
   );

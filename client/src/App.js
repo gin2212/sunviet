@@ -18,6 +18,8 @@ import Home from "./pages/manager/Home";
 import Department from "./pages/manager/Department";
 import Project from "./pages/manager/Project";
 import Approval_Process from "./pages/manager/Approval_Process";
+import Document from "./pages/manager/Document";
+import RoleActions from "./pages/manager/RoleActions";
 
 function App() {
   return (
@@ -47,6 +49,14 @@ const MainLayout = () => {
         <Route
           path="/approval-process"
           element={<PrivateRoute element={<Approval_Process />} />}
+        />
+        <Route
+          path="/document"
+          element={<PrivateRoute element={<Document />} />}
+        />
+        <Route
+          path="/role-action"
+          element={<PrivateRoute element={<RoleActions />} />}
         />
         <Route path={"*"} element={<Error />}></Route>
         <Route path="/error-403" element={<Error403 />}></Route>

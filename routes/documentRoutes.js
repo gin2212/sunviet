@@ -4,6 +4,8 @@ const documentController = require("../controllers/documentController");
 const router = express.Router();
 const middlewares = require("./middlewares");
 const multer = require("multer");
+const fs = require("fs");
+const slugify = require("slugify");
 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -20,7 +22,10 @@ let storage = multer.diskStorage({
     }
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    const originalname = file.originalname;
+    const filename = `${slugify(originalname, { lower: true })}`;
+
+    cb(null, filename);
   },
 });
 
@@ -31,34 +36,34 @@ let upload = multer({
 let uploadFile = upload.single("file");
 
 router.post(
-  "/documents/create",
+  "/create",
   middlewares.authorize,
   uploadFile,
   documentController.createDocument
 );
 router.get(
-  "/documents/getAll",
+  "/getAll",
   middlewares.authorize,
   documentController.getAllDocuments
 );
 router.get(
-  "/documents/getById/:id",
+  "/getById/:id",
   middlewares.authorize,
   documentController.getDocumentById
 );
 router.put(
-  "/documents/update/:id",
+  "/update/:id",
   middlewares.authorize,
   uploadFile,
   documentController.updateDocument
 );
 router.delete(
-  "/documents/delete/:id",
+  "/delete/:id",
   middlewares.authorize,
   documentController.deleteDocument
 );
 router.get(
-  "/documents/getPaging",
+  "/getPaging",
   middlewares.authorize,
   documentController.getPagingDocuments
 );

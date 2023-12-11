@@ -35,6 +35,7 @@ let userSchema = new Schema(
     activeStatus: {
       type: Number,
     },
+    department: { type: Schema.Types.ObjectId, ref: "Departments" },
   },
   { versionKey: false }
 );

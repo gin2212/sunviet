@@ -1,30 +1,29 @@
-require("../database");
 const mongoose = require("mongoose");
 
-const approvalStepSchema = new mongoose.Schema({
+const commentSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
+  content: String,
+  timestamp: { type: Date, default: Date.now },
+});
+
+const approverSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
+  status: {
+    type: String,
+    enum: ["Pending", "Approved", "Rejected"],
+    default: "Pending",
+  },
+});
+
+const stepSchema = new mongoose.Schema({
   stepName: { type: String, required: true },
-  approvers: [
-    {
-      user: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
-      status: {
-        type: String,
-        enum: ["Pending", "Approved", "Rejected"],
-        default: "Pending",
-      },
-    },
-  ],
-  comments: [
-    {
-      user: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
-      content: String,
-      timestamp: { type: Date, default: Date.now },
-    },
-  ],
+  approvers: [approverSchema],
+  comments: [commentSchema],
 });
 
 const approvalProcessSchema = new mongoose.Schema({
   processName: { type: String, required: true },
-  steps: [approvalStepSchema],
+  steps: [stepSchema],
 });
 
 const proposalSchema = new mongoose.Schema({

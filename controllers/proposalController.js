@@ -4,13 +4,14 @@ const fs = require("fs");
 const Proposals = require("../database/entities/Proposal");
 const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
+
 async function createProposal(req, res) {
   try {
     let proposal = new Proposals(req.body);
     proposal.createdBy = req.userId;
 
     if (req?.file) {
-      proposal.file = `public/files/${req.file.filename}`;
+      proposal.file = `public/files/${req.userId}/${req.file.filename}`;
     }
 
     await proposal.save();
@@ -58,7 +59,7 @@ async function updateProposal(req, res) {
     };
 
     if (req?.file) {
-      newProposal.file = `public/files/${req.file.filename}`;
+      newProposal.file = `public/files/${req.userId}/${req.file.filename}`;
     }
     let updatedProposal = await Departments.findOneAndUpdate(
       { _id: req.params.id },
@@ -128,6 +129,140 @@ async function getPagingProposals(req, res) {
   }
 }
 
+async function approveStep(req, res) {
+  try {
+    const { proposalId } = req.params;
+    const { userId, comment } = req.body;
+
+    const proposal = await Proposal.findById(proposalId).populate(
+      "selectedApprovalProcess"
+    );
+
+    // Xác định stepIndex dựa trên userId
+    const { selectedApprovalProcess } = proposal;
+    const { steps } = selectedApprovalProcess;
+
+    const stepIndex = steps.findIndex((step) =>
+      step.approvers.some((approver) => approver.user.toString() === userId)
+    );
+
+    if (stepIndex === -1) {
+      return res
+        .status(400)
+        .json({ message: "User không có quyền duyệt bước này." });
+    }
+
+    // TODO: Xử lý duyệt bước duyệt và lưu vào cơ sở dữ liệu
+    const currentStep = steps[stepIndex];
+    currentStep.approvers.find(
+      (approver) => approver.user.toString() === userId
+    ).status = "Approved";
+    currentStep.comments.push({ user: userId, content: comment });
+
+    // Kiểm tra xem có đủ approvers đã approved hay chưa
+    const allApproved = currentStep.approvers.every(
+      (approver) => approver.status === "Approved"
+    );
+
+    // Nếu tất cả approvers đã approved, chuyển sang bước tiếp theo
+    if (allApproved) {
+      if (stepIndex < steps.length - 1) {
+        steps[stepIndex + 1].approvers.forEach(
+          (approver) => (approver.status = "Pending")
+        );
+      }
+
+      // Cập nhật trạng thái của đề xuất
+      proposal.status = "Pending";
+
+      // TODO: Lưu vào cơ sở dữ liệu
+      await proposal.save();
+    }
+
+    res.status(200).json({ message: "Bước duyệt đã được duyệt." });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function rejectStep(req, res) {
+  try {
+    const { proposalId } = req.params;
+    const { userId, comment } = req.body;
+
+    const proposal = await Proposal.findById(proposalId).populate(
+      "selectedApprovalProcess"
+    );
+
+    // Xác định stepIndex dựa trên userId
+    const { selectedApprovalProcess } = proposal;
+    const { steps } = selectedApprovalProcess;
+
+    const stepIndex = steps.findIndex((step) =>
+      step.approvers.some((approver) => approver.user.toString() === userId)
+    );
+
+    if (stepIndex === -1) {
+      return res
+        .status(400)
+        .json({ message: "User không có quyền từ chối bước này." });
+    }
+
+    // TODO: Xử lý từ chối bước duyệt và lưu vào cơ sở dữ liệu
+    const currentStep = steps[stepIndex];
+    currentStep.approvers.find(
+      (approver) => approver.user.toString() === userId
+    ).status = "Rejected";
+    currentStep.comments.push({ user: userId, content: comment });
+
+    // Cập nhật trạng thái của đề xuất
+    proposal.status = "Rejected";
+
+    // TODO: Lưu vào cơ sở dữ liệu
+    await proposal.save();
+
+    res.status(200).json({ message: "Bước duyệt đã bị từ chối." });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function addComment(req, res) {
+  try {
+    const { proposalId } = req.params;
+    const { userId, commentContent } = req.body;
+
+    const proposal = await Proposal.findById(proposalId).populate(
+      "selectedApprovalProcess"
+    );
+
+    // Xác định stepIndex dựa trên userId
+    const { selectedApprovalProcess } = proposal;
+    const { steps } = selectedApprovalProcess;
+
+    const stepIndex = steps.findIndex((step) =>
+      step.approvers.some((approver) => approver.user.toString() === userId)
+    );
+
+    if (stepIndex === -1) {
+      return res
+        .status(400)
+        .json({ message: "User không có quyền thêm bình luận cho bước này." });
+    }
+
+    // TODO: Thêm bình luận vào bước duyệt và lưu vào cơ sở dữ liệu
+    const currentStep = steps[stepIndex];
+    currentStep.comments.push({ user: userId, content: commentContent });
+
+    // TODO: Lưu vào cơ sở dữ liệu
+    await proposal.save();
+
+    res.status(200).json({ message: "Bình luận đã được thêm vào bước duyệt." });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   createProposal,
   getAllProposals,
@@ -135,4 +270,7 @@ module.exports = {
   updateProposal,
   deleteProposal,
   getPagingProposals,
+  addComment,
+  rejectStep,
+  approveStep,
 };

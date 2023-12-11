@@ -9,7 +9,7 @@ async function createDocument(req, res) {
     document.createdBy = req.userId;
 
     if (req?.file) {
-      document.file = `public/files/${req.file.filename}`;
+      document.file = `files/${req.userId}/${req.file.filename}`;
     }
 
     await document.save();
@@ -62,7 +62,7 @@ async function updateDocument(req, res) {
     };
 
     if (req?.file) {
-      newDocument.file = `public/files/${req.file.filename}`;
+      newDocument.file = `files/${req.userId}/${req.file.filename}`;
     }
 
     const updatedDocument = await Documents.findOneAndUpdate(

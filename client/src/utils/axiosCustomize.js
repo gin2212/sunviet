@@ -108,6 +108,11 @@ class APIClient {
    * post given data to url
    */
   post = (url, data) => {
+    if (data instanceof FormData) {
+      return axios.post(url, data, {
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+      });
+    }
     return axios.post(url, data);
   };
   /**

@@ -80,6 +80,64 @@ export const deleteApprovalProcess = (id) => {
   return axios.delete(`api/approval-process/delete/${id}`);
 };
 
+//Document
+export const getPagingDocument = (data) => {
+  return axios.get("api/document/getPaging", data);
+};
+
+export const getAllDocument = () => {
+  return axios.get("api/document/getAll");
+};
+
+export const getDocumentId = (id) => {
+  return axios.get(`api/document/getById/${id}`);
+};
+
+export const createDocument = (data) => {
+  return axios.post("api/document/create", data);
+};
+
+export const updateDocument = (id, data) => {
+  return axios.put(`api/document/update/${id}`, data);
+};
+
+export const deleteDocument = (id) => {
+  return axios.delete(`api/document/delete/${id}`);
+};
+
+//Action
+export const getPagingAction = (data) => {
+  return axios.get("api/action/getPaging", data);
+};
+
+export const getAllAction = () => {
+  return axios.get("api/action/getAll");
+};
+
+export const getActionId = (id) => {
+  return axios.get(`api/action/getById/${id}`);
+};
+
+export const createAction = (data) => {
+  return axios.post("api/action/create", data);
+};
+
+export const updateAction = (id, data) => {
+  return axios.put(`api/action/update/${id}`, data);
+};
+
+export const deleteAction = (id) => {
+  return axios.delete(`api/action/delete/${id}`);
+};
+
+export const insertManyRoleAction = (data) => {
+  return axios.post(`api/action/insertMany`, data);
+};
+
+export const getAllRole = () => {
+  return axios.get("api/role/getAll");
+};
+
 //User
 export const getAllUser = () => {
   return axios.get("api/user/getAll");
