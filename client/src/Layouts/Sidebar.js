@@ -1,18 +1,98 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { HomeOutlined } from "@ant-design/icons";
 import { Layout } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Menu, MenuItem } from "react-pro-sidebar";
 import logo from "../assets/images/logo.jpg";
+import { getMyAction } from "../services/api";
 
 const { Sider } = Layout;
+
+const listMenu = [
+  {
+    key: "home",
+    item: <HomeOutlined />,
+    label: "Trang chủ",
+  },
+  {
+    key: "department",
+    item: <HomeOutlined />,
+    label: "Phòng ban",
+  },
+  {
+    key: "project",
+    item: <HomeOutlined />,
+    label: "Dự án",
+  },
+  {
+    key: "approval-process",
+    item: <HomeOutlined />,
+    label: "Quy trình",
+  },
+  {
+    key: "document",
+    item: <HomeOutlined />,
+    label: "Tài liệu",
+  },
+  {
+    key: "user",
+    item: <HomeOutlined />,
+    label: "Nhân viên",
+  },
+  {
+    key: "role",
+    item: <HomeOutlined />,
+    label: "Chức vụ",
+  },
+  {
+    key: "role-action",
+    item: <HomeOutlined />,
+    label: "Quyền hạn",
+  },
+];
 const Sidebar = ({ collapsed }) => {
   const navigate = useNavigate();
+  const [listAction, setListAction] = useState();
 
   const handlePage = (href) => {
     navigate(href);
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const actions = await getMyAction();
+      setListAction(actions.data);
+    };
+    fetchData();
+  }, []);
+
+  const generateMenu = (listMenu, handlePage, currentPath) => {
+    return listMenu.map((menuItem) => {
+      const { key, item, label } = menuItem;
+
+      if (!listAction?.includes(key) && key !== "home") {
+        return null;
+      }
+
+      return (
+        <MenuItem
+          key={key}
+          className="custom-menu font-medium text-[15px]"
+          active={currentPath === `/${key}`}
+          icon={item}
+          onClick={() => handlePage(`/${key}`)}
+        >
+          {label}
+        </MenuItem>
+      );
+    });
+  };
+
+  const menuItems = generateMenu(
+    listMenu,
+    handlePage,
+    window.location.pathname
+  );
   return (
     <Sider
       trigger={null}
@@ -30,7 +110,7 @@ const Sidebar = ({ collapsed }) => {
           <img src={logo} alt="" />
         </a>
       </div>
-      <Menu>
+      {/* <Menu>
         <MenuItem
           className="custom-menu font-medium text-[15px]"
           active={window.location.pathname === "/"}
@@ -73,13 +153,31 @@ const Sidebar = ({ collapsed }) => {
         </MenuItem>
         <MenuItem
           className="custom-menu font-medium text-[15px]"
+          active={window.location.pathname === "/user"}
+          icon={<HomeOutlined />}
+          onClick={() => handlePage("/user")}
+        >
+          Nhân viên
+        </MenuItem>
+        <MenuItem
+          className="custom-menu font-medium text-[15px]"
+          active={window.location.pathname === "/role"}
+          icon={<HomeOutlined />}
+          onClick={() => handlePage("/role")}
+        >
+          Chức vụ
+        </MenuItem>
+        <MenuItem
+          className="custom-menu font-medium text-[15px]"
           active={window.location.pathname === "/role-action"}
           icon={<HomeOutlined />}
           onClick={() => handlePage("/role-action")}
         >
-          Chức vụ
+          Quyền hạn
         </MenuItem>
-      </Menu>
+      </Menu> */}
+
+      <Menu>{menuItems}</Menu>
     </Sider>
   );
 };

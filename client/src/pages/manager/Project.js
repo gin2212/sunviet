@@ -79,10 +79,10 @@ function Project() {
       dataArray.map((item) => {
         return {
           key: item?._id,
-          projectName: item.projectName,
+          projectName: item?.projectName,
           description: item?.description,
           department: item?.department,
-          createdBy: item.createdBy.fullName,
+          createdBy: item?.createdBy?.fullName,
           createdTime: moment(item?.createdTime).format("DD/MM/YYYY HH:mm"),
         };
       });

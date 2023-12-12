@@ -22,6 +22,7 @@ const departmentRoute = require("./routes/departmentRoute");
 const projectRoute = require("./routes/projectRoute");
 const proposalRoute = require("./routes/proposalRoute");
 const documentlRoute = require("./routes/documentRoutes");
+const roleActionRoute = require("./routes/roleActionRoute");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -35,6 +36,7 @@ app.use("/api/department", departmentRoute);
 app.use("/api/project", projectRoute);
 app.use("/api/proposal", proposalRoute);
 app.use("/api/document", documentlRoute);
+app.use("/api/roleaction", roleActionRoute);
 
 app.listen(port, (req, res) => {
   console.log("server listening on port " + port);

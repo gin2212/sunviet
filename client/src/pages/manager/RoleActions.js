@@ -1,22 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Col, Container, Row } from "reactstrap";
-import {
-  message,
-  Input,
-  Button,
-  Form,
-  Space,
-  Select,
-  Tooltip,
-  Table,
-  Checkbox,
-  Divider,
-} from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { message, Input, Button, Form, Space, Select, Checkbox } from "antd";
 import {
   getAllAction,
   getAllRole,
-  getPagingAction,
+  getPagingRoleAction,
   insertManyRoleAction,
 } from "../../services/api";
 
@@ -31,7 +19,7 @@ const getAllData = async (_prams) => {
         pageSize: 100000,
         search: "",
       };
-  const dataRes = await getPagingAction(params);
+  const dataRes = await getPagingRoleAction(params);
   if (!dataRes.data || dataRes.data.length === 0) {
     return [];
   }
@@ -197,9 +185,10 @@ const RoleActions = () => {
                           Chọn tất cả
                         </Checkbox>
                         <CheckboxGroup
-                          options={listAction?.map((item) => {
-                            return item.actionName;
-                          })}
+                          options={listAction?.map((item) => ({
+                            label: item.actionLabel,
+                            value: item.actionName,
+                          }))}
                           value={checkedList}
                           onChange={onChange}
                           className="list-role-actions"

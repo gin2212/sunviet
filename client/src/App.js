@@ -20,6 +20,8 @@ import Project from "./pages/manager/Project";
 import Approval_Process from "./pages/manager/Approval_Process";
 import Document from "./pages/manager/Document";
 import RoleActions from "./pages/manager/RoleActions";
+import Users from "./pages/manager/User";
+import Roles from "./pages/manager/Role";
 
 function App() {
   return (
@@ -58,6 +60,9 @@ const MainLayout = () => {
           path="/role-action"
           element={<PrivateRoute element={<RoleActions />} />}
         />
+        <Route path="/role" element={<PrivateRoute element={<Roles />} />} />
+
+        <Route path="/user" element={<PrivateRoute element={<Users />} />} />
         <Route path={"*"} element={<Error />}></Route>
         <Route path="/error-403" element={<Error403 />}></Route>
       </Routes>

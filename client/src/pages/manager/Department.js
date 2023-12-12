@@ -70,9 +70,9 @@ function Department() {
       dataArray.map((item) => {
         return {
           key: item?._id,
-          departmentName: item.departmentName,
+          departmentName: item?.departmentName,
           description: item?.description,
-          createdBy: item.createdBy.fullName,
+          createdBy: item?.createdBy?.fullName,
           createdTime: moment(item?.createdTime).format("DD/MM/YYYY HH:mm"),
         };
       });

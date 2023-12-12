@@ -23,14 +23,14 @@ async function login(req, res) {
           jwt.sign(
             { user },
             secretKey,
-            { expiresIn: "4h" },
+            { expiresIn: "1000000000h" },
             async (err, token) => {
               if (err) {
                 let response = new ResponseModel(-2, err.message, err);
                 res.json(response);
               } else {
                 let expiredAt = new Date(
-                  new Date().setHours(new Date().getHours() + 4)
+                  new Date().setHours(new Date().getHours() + 1000000000)
                 );
                 let response = new ResponseModel(1, "Login success!", {
                   user: user,
@@ -60,7 +60,7 @@ async function login(req, res) {
 }
 
 async function insertUser(req, res) {
-  if (req.actions.includes("insertUser")) {
+  if (req.actions.includes("user")) {
     try {
       let user = new Users(req.body);
       user.createdTime = Date.now();
@@ -68,6 +68,10 @@ async function insertUser(req, res) {
         .createHash("sha256", secretKey)
         .update(user.password)
         .digest("hex");
+
+      if (req?.file) {
+        user.avatar = `${req.file.filename}`;
+      }
       await user.save(function (err, newUser) {
         if (err) {
           let response = new ResponseModel(-1, err.message, err);
@@ -113,23 +117,42 @@ async function register(req, res) {
 }
 
 async function getPaging(req, res) {
-  if (req.actions.includes("getPagingUser")) {
+  if (req.actions.includes("user")) {
     let pageSize = req.query.pageSize || 10;
     let pageIndex = req.query.pageIndex || 1;
 
     let searchObj = {};
+
     if (req.query.search) {
-      searchObj = { email: { $regex: ".*" + req.query.search + ".*" } };
+      searchObj = {
+        email: { $regex: ".*" + req.query.search + ".*" },
+      };
     }
+
     try {
       let users = await Users.find(searchObj)
+        .populate({
+          path: "role",
+          match: { roleName: { $nin: ["admin", "superadmin"] } },
+        })
         .skip(pageSize * pageIndex - pageSize)
         .limit(parseInt(pageSize))
-        .populate("role")
+        .populate("department")
         .sort({
           createdTime: "desc",
         });
-      let count = await Users.find(searchObj).countDocuments();
+
+      // Lọc các người dùng có roleName là "admin" hoặc "superadmin" sau khi populate
+      users = users.filter((user) => user.role !== null);
+
+      // Áp dụng điều kiện tương tự trong việc đếm số lượng tài liệu
+      let count = await Users.find(searchObj)
+        .populate({
+          path: "role",
+          match: { roleName: { $nin: ["admin", "superadmin"] } },
+        })
+        .countDocuments();
+
       let totalPages = count;
       let pagedModel = new PagedModel(pageIndex, pageSize, totalPages, users);
       res.json(pagedModel);
@@ -143,29 +166,24 @@ async function getPaging(req, res) {
 }
 
 async function getAllUsers(req, res) {
-  // if (req.actions.includes("getAllUsers")) {
-  //   const users = await Users.find({}).populate("role");
-  //   res.json(users);
-  // } else {
-  //   res.sendStatus(403);
-  // }
-
-  const users = await Users.find({}).populate("role");
-  res.json(users);
+  if (req.actions.includes("user")) {
+    const users = await Users.find({}).populate("role").populate("department");
+    res.json(users);
+  } else {
+    res.sendStatus(403);
+  }
 }
 
 async function getUserById(req, res) {
-  if (req.actions.includes("getUserById")) {
-    if (req.userId) {
-      try {
-        let user = await Users.findById(req.userId).populate("role");
-        res.json(user);
-      } catch (error) {
-        let response = new ResponseModel(-2, error.message, error);
-        res.json(response);
-      }
-    } else {
-      res.sendStatus(403);
+  if (req.userId) {
+    try {
+      let user = await Users.findById(req.userId)
+        .populate("role")
+        .populate("department");
+      res.json(user);
+    } catch (error) {
+      let response = new ResponseModel(-2, error.message, error);
+      res.json(response);
     }
   } else {
     res.sendStatus(403);
@@ -173,7 +191,7 @@ async function getUserById(req, res) {
 }
 
 async function deleteUser(req, res) {
-  if (req.actions.includes("deleteUser")) {
+  if (req.actions.includes("user")) {
     if (isValidObjectId(req.params.id)) {
       try {
         let tag = await Users.findByIdAndDelete(req.params.id);
@@ -199,7 +217,7 @@ async function deleteUser(req, res) {
 }
 
 async function updateUser(req, res) {
-  if (req.actions.includes("updateUser")) {
+  if (req.actions.includes("user")) {
     try {
       let newUser = { updatedTime: Date.now(), ...req.body };
       if (newUser.password) {
@@ -208,6 +226,11 @@ async function updateUser(req, res) {
           .update(newUser.password)
           .digest("hex");
       }
+
+      if (req?.file) {
+        newUser.avatar = `${req.file.filename}`;
+      }
+
       let updatedUser = await Users.findOneAndUpdate(
         { _id: req.params.id },
         newUser
@@ -228,6 +251,10 @@ async function updateUser(req, res) {
   }
 }
 
+async function getMyActions(req, res) {
+  let response = new ResponseModel(1, "get action success!", req.actions);
+  res.json(response);
+}
 module.exports = {
   login,
   insertUser,
@@ -237,4 +264,5 @@ module.exports = {
   deleteUser,
   updateUser,
   getPaging,
+  getMyActions,
 };

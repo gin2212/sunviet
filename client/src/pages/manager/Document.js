@@ -94,12 +94,12 @@ function Document() {
       dataArray.map((item) => {
         return {
           key: item?._id,
-          title: item.title,
+          title: item?.title,
           file: item?.file,
           content: item?.content,
           issueDate: moment(item?.issueDate).format("DD/MM/YYYY"),
           authority: item?.authority,
-          createdBy: item.createdBy.fullName,
+          createdBy: item?.createdBy?.fullName,
           department: item?.department,
         };
       });
@@ -138,13 +138,6 @@ function Document() {
       },
     },
     {
-      title: "Bộ phận lưu trữ",
-      dataIndex: "department",
-      render: (_, { department }) => {
-        return department.departmentName;
-      },
-    },
-    {
       title: "tài liệu",
       dataIndex: "file",
       render: (_, record) => (
@@ -160,6 +153,12 @@ function Document() {
           />
         </Tooltip>
       ),
+    },
+    {
+      title: "Bộ phận lưu trữ",
+      dataIndex: "department",
+      render: (_, { department }) =>
+        department ? department?.departmentName : "Chưa xử lý",
     },
     {
       title: "Hành động",

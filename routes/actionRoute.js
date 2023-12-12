@@ -11,10 +11,6 @@ router.delete(
   actionController.deleteAction
 );
 router.get("/getAll", actionController.getAllActions);
-router.get(
-  "/getPaging",
-  middlewares.authorize,
-  actionController.getPagingActions
-);
+router.get("/getPaging", actionController.getPagingActions);
 router.get("/getById/:id", actionController.getActionById);
 module.exports = router;

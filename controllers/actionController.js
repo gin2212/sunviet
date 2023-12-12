@@ -5,13 +5,12 @@ const ResponseModel = require("../models/ResponseModel");
 const RoleActions = require("../database/entities/authentication/RoleActions");
 
 async function createAction(req, res) {
-  if (req.actions.includes("createAction")) {
+  if (req.actions.includes("action")) {
     try {
       let action = new Actions(req.body);
       action.createdTime = Date.now();
       let newAction = await action.save();
       let response = new ResponseModel(1, "Create action success!", newAction);
-
       res.json(response);
     } catch (error) {
       let response = new ResponseModel(404, error.message, error);
@@ -23,11 +22,11 @@ async function createAction(req, res) {
 }
 
 async function updateAction(req, res) {
-  if (req.actions.includes("updateAction")) {
+  if (req.actions.includes("action")) {
     try {
       let newAction = {
         updatedTime: Date.now(),
-        updatedBy: req.userId,
+        user: req.userId,
         ...req.body,
       };
       let updatedAction = await Actions.findOneAndUpdate(
@@ -55,9 +54,16 @@ async function updateAction(req, res) {
 }
 
 async function deleteAction(req, res) {
-  if (req.actions.includes("deleteAction")) {
+  if (req.actions.includes("action")) {
     if (isValidObjectId(req.params.id)) {
       try {
+        const role = await RoleActions.find({ action: req.params.id });
+
+        if (role.length > 0) {
+          let response = new ResponseModel(0, "Quyền đang được sử dụng", null);
+          return res.json(response);
+        }
+
         const action = await Actions.findByIdAndDelete(req.params.id);
         if (!action) {
           let response = new ResponseModel(0, "No item found!", null);
@@ -91,36 +97,27 @@ async function getAllActions(req, res) {
 }
 
 async function getPagingActions(req, res) {
-  if (req.actions.includes("getPagingActions")) {
-    let pageSize = req.query.pageSize || 10;
-    let pageIndex = req.query.pageIndex || 1;
+  let pageSize = req.query.pageSize || 10;
+  let pageIndex = req.query.pageIndex || 1;
 
-    let searchObj = {};
-
-    if (req.query.search) {
-      searchObj.actionName = { $regex: ".*" + req.query.search + ".*" };
-    }
-
-    try {
-      let actions = await Actions.find({
-        $and: [searchObj, { actionName: { $ne: "getAllActions" } }],
-      })
-        .skip(pageSize * pageIndex - pageSize)
-        .limit(parseInt(pageSize))
-        .sort({
-          createdTime: "desc",
-        });
-
-      let count = await Actions.find(searchObj).countDocuments();
-      let totalPages = count;
-      let pagedModel = new PagedModel(pageIndex, pageSize, totalPages, actions);
-      res.json(pagedModel);
-    } catch (error) {
-      let response = new ResponseModel(404, error.message, error);
-      res.status(404).json(response);
-    }
-  } else {
-    res.sendStatus(403);
+  let searchObj = {};
+  if (req.query.search) {
+    searchObj = { actionName: { $regex: ".*" + req.query.search + ".*" } };
+  }
+  try {
+    let actions = await Actions.find(searchObj)
+      .skip(pageSize * pageIndex - pageSize)
+      .limit(parseInt(pageSize))
+      .sort({
+        createdTime: "desc",
+      });
+    let count = await Actions.find(searchObj).countDocuments();
+    let totalPages = count;
+    let pagedModel = new PagedModel(pageIndex, pageSize, totalPages, actions);
+    res.json(pagedModel);
+  } catch (error) {
+    let response = new ResponseModel(404, error.message, error);
+    res.status(404).json(response);
   }
 }
 
@@ -139,12 +136,6 @@ async function getActionById(req, res) {
   }
 }
 
-exports.createAction = createAction;
-exports.updateAction = updateAction;
-exports.deleteAction = deleteAction;
-exports.getAllActions = getAllActions;
-exports.getPagingActions = getPagingActions;
-exports.getActionById = getActionById;
 module.exports = {
   createAction,
   updateAction,

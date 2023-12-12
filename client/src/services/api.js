@@ -106,39 +106,88 @@ export const deleteDocument = (id) => {
 };
 
 //Action
-export const getPagingAction = (data) => {
-  return axios.get("api/action/getPaging", data);
-};
-
 export const getAllAction = () => {
   return axios.get("api/action/getAll");
 };
 
+export const getPagingAction = (data) => {
+  return axios.get("api/action/getPaging", data);
+};
+
+//RoleAction
+export const getPagingRoleAction = (data) => {
+  return axios.get("api/roleaction/getPaging", data);
+};
+
 export const getActionId = (id) => {
-  return axios.get(`api/action/getById/${id}`);
+  return axios.get(`api/roleaction/getById/${id}`);
 };
 
 export const createAction = (data) => {
-  return axios.post("api/action/create", data);
+  return axios.post("api/roleaction/create", data);
 };
 
 export const updateAction = (id, data) => {
-  return axios.put(`api/action/update/${id}`, data);
+  return axios.put(`api/roleaction/update/${id}`, data);
 };
 
 export const deleteAction = (id) => {
-  return axios.delete(`api/action/delete/${id}`);
+  return axios.delete(`api/roleaction/delete/${id}`);
 };
 
 export const insertManyRoleAction = (data) => {
-  return axios.post(`api/action/insertMany`, data);
+  return axios.post(`api/roleaction/insertMany`, data);
 };
-
+//role
 export const getAllRole = () => {
   return axios.get("api/role/getAll");
+};
+
+export const getPagingRole = (data) => {
+  return axios.get("api/role/getPaging", data);
+};
+
+export const getRoleId = (id) => {
+  return axios.get(`api/role/getById/${id}`);
+};
+
+export const createRole = (data) => {
+  return axios.post("api/role/create", data);
+};
+
+export const updateRole = (id, data) => {
+  return axios.put(`api/role/update/${id}`, data);
+};
+
+export const deleteRole = (id) => {
+  return axios.delete(`api/role/delete/${id}`);
 };
 
 //User
 export const getAllUser = () => {
   return axios.get("api/user/getAll");
+};
+
+export const getPagingUser = (data) => {
+  return axios.get("api/user/getPaging", data);
+};
+
+export const getUserId = (id) => {
+  return axios.get(`api/user/getById/${id}`);
+};
+
+export const createUser = (data) => {
+  return axios.post("api/user/create", data);
+};
+
+export const updateUser = (id, data) => {
+  return axios.put(`api/user/update/${id}`, data);
+};
+
+export const deleteUser = (id) => {
+  return axios.delete(`api/user/delete/${id}`);
+};
+
+export const getMyAction = () => {
+  return axios.get("api/user/getMyAction");
 };

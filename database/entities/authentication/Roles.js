@@ -8,18 +8,6 @@ let roleSchema = new Schema(
     roleName: {
       type: String,
       required: true,
-      unique: true,
-    },
-    actions: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Actions",
-      },
-    ],
-    roleIndex: {
-      type: Number,
-      require: true,
-      default: 99,
     },
     createdTime: {
       type: Date,

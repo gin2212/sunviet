@@ -1,13 +1,13 @@
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const Proposals = require("../database/entities/Proposal");
+const Proposal = require("../database/entities/Proposal");
 const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
 
 async function createProposal(req, res) {
   try {
-    let proposal = new Proposals(req.body);
+    let proposal = new Proposal(req.body);
     proposal.createdBy = req.userId;
 
     if (req?.file) {
@@ -27,7 +27,7 @@ async function createProposal(req, res) {
 
 async function getAllProposals(req, res) {
   try {
-    let proposals = await Proposals.find({});
+    let proposals = await Proposal.find({});
     res.json(proposals);
   } catch (error) {
     let response = new ResponseModel(404, error.message, error);
@@ -38,7 +38,7 @@ async function getAllProposals(req, res) {
 async function getProposalById(req, res) {
   if (isValidObjectId(req.params.id)) {
     try {
-      let proposal = await Proposals.findById(req.params.id);
+      let proposal = await Proposal.findById(req.params.id);
       res.json(proposal);
     } catch (error) {
       res.status(404).json(404, error.message, error);

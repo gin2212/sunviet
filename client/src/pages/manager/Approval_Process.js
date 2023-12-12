@@ -79,8 +79,8 @@ const Approval_Process = () => {
       dataArray.map((item) => {
         return {
           key: item?._id,
-          processName: item.processName,
-          steps: item.steps,
+          processName: item?.processName,
+          steps: item?.steps,
         };
       });
     return data ? data : [];
