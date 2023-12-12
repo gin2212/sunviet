@@ -260,7 +260,12 @@ const Approval_Process = () => {
       form.submit();
     };
     return (
-      <Modal title="Basic Drawer" open={open} onOk={onOk} onCancel={onCancel}>
+      <Modal
+        title="Thêm quá trình duyệt"
+        open={open}
+        onOk={onOk}
+        onCancel={onCancel}
+      >
         <Form form={form} layout="vertical" name="userForm">
           <Form.Item
             name="stepName"

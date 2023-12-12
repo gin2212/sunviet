@@ -173,7 +173,7 @@ const Roles = () => {
 
   const columns = [
     {
-      title: "Tên Quyền",
+      title: "Chức vụ",
       dataIndex: "roleName",
     },
     {
@@ -247,11 +247,11 @@ const Roles = () => {
                   <Col sm={3}>
                     <Form.Item
                       name="roleName"
-                      label="Tìm kiếm theo Tên"
+                      label="Tìm kiếm theo chức vụ"
                       rules={[
                         {
                           required: false,
-                          message: "Please input role name!",
+                          message: "vui lòng nhập chức vụ!",
                         },
                         {
                           type: "roleName",
@@ -263,7 +263,7 @@ const Roles = () => {
                       ]}
                     >
                       <Input
-                        placeholder="Nhập tên quyền..."
+                        placeholder="Nhập chức vụ..."
                         name="roleName"
                         allowClear={true}
                       />
@@ -321,11 +321,11 @@ const Roles = () => {
                     </Col>
                     <Form.Item
                       name="roleName"
-                      label="Tên Quyền"
+                      label="Chức vụ"
                       rules={[
                         {
                           required: true,
-                          message: "Vui lòng nhập tên quyền!",
+                          message: "Vui lòng nhập chức vụ!",
                         },
                         {
                           type: "roleName",
@@ -337,7 +337,7 @@ const Roles = () => {
                       ]}
                     >
                       <Input
-                        placeholder="Nhập tên quyền..."
+                        placeholder="Nhập chức vụ..."
                         name="roleName"
                         allowClear={true}
                       />

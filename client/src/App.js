@@ -40,6 +40,7 @@ const MainLayout = () => {
     <Layouts>
       <Routes>
         <Route path="/" element={<PrivateRoute element={<Home />} />} />
+        <Route path="/home" element={<PrivateRoute element={<Home />} />} />
         <Route
           path="/department"
           element={<PrivateRoute element={<Department />} />}
