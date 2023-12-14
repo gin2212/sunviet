@@ -3,12 +3,12 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
-  LockOutlined,
   RollbackOutlined,
+  BellOutlined,
 } from "@ant-design/icons";
 import { Layout, Button, theme, Avatar, Dropdown, message, Form } from "antd";
 import { useNavigate } from "react-router-dom";
-import { updateUser, getMe } from "../services/api";
+import { updateUser, getMe, getNotify } from "../services/api";
 import ModalChangePass from "./Modal/ModalChangePass";
 
 const { Header } = Layout;
@@ -21,10 +21,35 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
   const [image, setImage] = useState();
   const [imageUrl, setImageUrl] = useState();
   const [imageEditUrl, setImageEditUrl] = useState();
+  const [page, setPage] = useState(1);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     handleInfoUser();
+    fetchData();
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
+
+  const fetchData = async () => {
+    const res = await getNotify();
+    setListNoti(res?.data?.items);
+    setData([...data, ...newData]);
+    setPage(page + 1);
+  };
+
+  const handleScroll = () => {
+    if (
+      window.innerHeight + window.scrollY >=
+      document.body.offsetHeight - 100
+    ) {
+      fetchData();
+    }
+  };
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -102,6 +127,29 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
             />
           </div>
           <div className="user-info">
+            <div className="icon-ring">
+              <span className="number-noti"> 9</span>
+              <Dropdown
+                menu={{
+                  items: itemsSecondDropdown,
+                }}
+                trigger={["click"]}
+                placement="bottom"
+              >
+                <div onClick={(e) => e.preventDefault()}>
+                  <BellOutlined
+                    style={{
+                      fontSize: "20px",
+                      backgroundColor: "#F0F2F5",
+                      padding: "10px",
+                      boxSizing: "border-box",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                    }}
+                  />
+                </div>
+              </Dropdown>
+            </div>
             <div>
               <Dropdown
                 menu={{
