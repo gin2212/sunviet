@@ -148,7 +148,7 @@ function Document() {
             icon={<FolderViewOutlined />}
             size="large"
             onClick={() =>
-              handlePreview(`http://localhost:5555/${record.file}`)
+              handlePreview(`${process.env.REACT_APP_API_URL}${record.file}`)
             }
           />
         </Tooltip>

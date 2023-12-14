@@ -191,3 +191,7 @@ export const deleteUser = (id) => {
 export const getMyAction = () => {
   return axios.get("api/user/getMyAction");
 };
+
+export const getMe = () => {
+  return axios.get("api/user/getMe");
+};

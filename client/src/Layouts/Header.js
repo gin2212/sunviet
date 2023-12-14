@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -8,18 +8,23 @@ import {
 } from "@ant-design/icons";
 import { Layout, Button, theme, Avatar, Dropdown, message, Form } from "antd";
 import { useNavigate } from "react-router-dom";
-import { getAccountInfo, createNewPassword } from "../services/api";
-// import ModalViewInfo from "./Modal/ModalViewInfo";
-// import ModalChangePass from "./Modal/ModalChangePass";
+import { updateUser, getMe } from "../services/api";
+import ModalChangePass from "./Modal/ModalChangePass";
 
 const { Header } = Layout;
 
 const HeaderMain = ({ collapsed, setCollapsed }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const [isModalUser, setIsModalUser] = useState(false);
+  const [userInfo, setUserInfo] = useState();
   const [isModalChangePass, setIsModalChangePass] = useState(false);
+  const [image, setImage] = useState();
+  const [imageUrl, setImageUrl] = useState();
+  const [imageEditUrl, setImageEditUrl] = useState();
 
+  useEffect(() => {
+    handleInfoUser();
+  }, []);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -29,39 +34,48 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
     navigate("/login");
   };
 
-  const handleShowModel = () => {
-    setIsModalUser(true);
-  };
-
   const ShowChangePass = () => {
     setIsModalChangePass(true);
   };
 
+  const handleInfoUser = async () => {
+    const res = await getMe();
+    setUserInfo(res);
+  };
+
   const onFinish = async (data) => {
-    // const res = await createNewPassword(data);
-    // if (res.statusCode === 200) {
-    //   message.success("Đổi mật khẩu thành công!");
-    //   setIsModalChangePass(false);
-    //   form.resetFields();
-    // } else if (res.statusCode === 422) {
-    //   message.error("Đổi mật khẩu thất bại!");
-    // }
+    const formData = new FormData();
+
+    if (image) {
+      formData.append("image", image);
+    }
+    if (data.password) {
+      formData.append("password", data.password);
+    }
+    formData.append("fullName", data.fullName);
+    formData.append("phoneNumber", data.phoneNumber);
+
+    try {
+      await updateUser(data.id, formData);
+      message.success("Cập nhật thôn tin thành công!");
+      setIsModalChangePass(false);
+      form.resetFields();
+      handleInfoUser();
+    } catch (error) {
+      console.log(error);
+      message.error("Cập nhật thông tin thất bại!");
+    }
   };
 
   const itemsSecondDropdown = [
     {
-      label: <div onClick={handleShowModel}>Thông tin cá nhân</div>,
+      label: <div onClick={ShowChangePass}>Cập nhật thôn tin</div>,
       key: "1",
       icon: <UserOutlined />,
     },
     {
-      label: <div onClick={ShowChangePass}>Đổi mật khẩu</div>,
-      key: "2",
-      icon: <LockOutlined />,
-    },
-    {
       label: <div onClick={handleLogout}>Đăng xuất</div>,
-      key: "3",
+      key: "2",
       icon: <RollbackOutlined />,
     },
   ];
@@ -97,13 +111,21 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
               >
                 <div onClick={(e) => e.preventDefault()}>
                   <div className="role">
-                    <div className="text-white h-full">
-                      {/* <div className="h-1/2 role-admin">
-                        {userInfo?.roleId?.name}
+                    <div style={{ height: "100%" }}>
+                      <div className=" role-admin">
+                        {userInfo?.role?.roleName}
                       </div>
-                      <div className="h-1/2 role-name">{userInfo?.name}</div> */}
+                      <div className=" role-name">{userInfo?.fullName}</div>
                     </div>
-                    <Avatar size="large" icon={<UserOutlined />} />
+
+                    {userInfo?.avatar ? (
+                      <Avatar
+                        size="large"
+                        src={`${process.env.REACT_APP_API_URL}images/${userInfo?.avatar}`}
+                      />
+                    ) : (
+                      <Avatar size="large" icon={<UserOutlined />} />
+                    )}
                   </div>
                 </div>
               </Dropdown>
@@ -111,17 +133,20 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
           </div>
         </div>
       </Header>
-      {/* <ModalViewInfo
-        isModalUser={isModalUser}
-        setIsModalUser={setIsModalUser}
-        userInfo={userInfo}
-      />
+
       <ModalChangePass
         isModalChangePass={isModalChangePass}
         setIsModalChangePass={setIsModalChangePass}
         onFinish={onFinish}
         form={form}
-      /> */}
+        dataUser={userInfo}
+        setImage={setImage}
+        image={image}
+        imageUrl={imageUrl}
+        setImageUrl={setImageUrl}
+        imageEditUrl={imageEditUrl}
+        setImageEditUrl={setImageEditUrl}
+      />
     </>
   );
 };

@@ -26,38 +26,13 @@ axios.interceptors.response.use(
       } else if (error.response.status === 403) {
         history.push("/error-403");
       } else {
-        return refreshTokenAndRetryRequest(error.config);
+        message.error("Đã có lỗi xảy ra vui lòng thử lại sau !");
       }
     } else {
       return Promise.reject(error);
     }
   }
 );
-
-const refreshTokenAndRetryRequest = async () => {
-  try {
-    let data = localStorage.getItem("data");
-
-    data = JSON.parse(data);
-    if (data) {
-      const param = {
-        refreshToken: data.token.refreshToken,
-        userId: data.user._id,
-      };
-
-      const response = await apiClient.post(urlRefreshToken, param);
-      if (response.data) {
-        const newAccessToken = response.data.data.accessToken;
-        localStorage.setItem("accessToken", newAccessToken);
-      }
-    }
-  } catch (refreshError) {
-    console.error("Token refresh failed:", refreshError);
-    message.error("Phiên làm việc đã hết, vui lòng đăng nhập lại");
-    localStorage.clear();
-    history.push("/login");
-  }
-};
 /**
  * Sets the default authorization
  * @param {*} token
@@ -119,6 +94,11 @@ class APIClient {
    * Put data
    */
   put = (url, data) => {
+    if (data instanceof FormData) {
+      return axios.put(url, data, {
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+      });
+    }
     return axios.put(url, data);
   };
   /**

@@ -255,6 +255,22 @@ async function getMyActions(req, res) {
   let response = new ResponseModel(1, "get action success!", req.actions);
   res.json(response);
 }
+
+async function getMe(req, res) {
+  if (req.userId) {
+    try {
+      let user = await Users.findById(req.userId)
+        .populate("role")
+        .populate("department");
+      res.json(user);
+    } catch (error) {
+      let response = new ResponseModel(-2, error.message, error);
+      res.json(response);
+    }
+  } else {
+    res.sendStatus(403);
+  }
+}
 module.exports = {
   login,
   insertUser,
@@ -265,4 +281,5 @@ module.exports = {
   updateUser,
   getPaging,
   getMyActions,
+  getMe,
 };

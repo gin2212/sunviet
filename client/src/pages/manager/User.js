@@ -10,7 +10,6 @@ import {
   Tooltip,
   Drawer,
   Upload,
-  Modal,
   Image,
 } from "antd";
 import {
@@ -411,6 +410,7 @@ const Users = () => {
                         <Input name="id" />
                       </Form.Item>
                     </Col>
+
                     <Form.Item
                       name="email"
                       label="Email"
@@ -475,132 +475,127 @@ const Users = () => {
                         allowClear={true}
                       />
                     </Form.Item>
-                    <Col>
-                      <Form.Item name="phoneNumber" label="Số điện thoại">
-                        <Input
-                          placeholder="Nhập số điện thoại..."
-                          name="phoneNumber"
-                          allowClear={true}
-                        />
-                      </Form.Item>
 
-                      <Form.Item
-                        name="role"
-                        label="Chức vụ"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Vui lòng chọn một chức vụ!",
-                          },
-                        ]}
+                    <Form.Item name="phoneNumber" label="Số điện thoại">
+                      <Input
+                        placeholder="Nhập số điện thoại..."
+                        name="phoneNumber"
+                        allowClear={true}
+                      />
+                    </Form.Item>
+
+                    <Form.Item
+                      name="role"
+                      label="Chức vụ"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng chọn một chức vụ!",
+                        },
+                      ]}
+                    >
+                      <Select
+                        placeholder="Chọn một chức vụ..."
+                        allowClear
+                        showSearch
+                        name="roles"
                       >
-                        <Select
-                          placeholder="Chọn một chức vụ..."
-                          allowClear
-                          showSearch
-                          name="roles"
-                        >
-                          {listRole?.length > 0 &&
-                            listRole.map((item) => {
-                              return (
-                                <Option key={item._id} value={item._id}>
-                                  {item.roleName}
-                                </Option>
-                              );
-                            })}
-                        </Select>
-                      </Form.Item>
+                        {listRole?.length > 0 &&
+                          listRole.map((item) => {
+                            return (
+                              <Option key={item._id} value={item._id}>
+                                {item.roleName}
+                              </Option>
+                            );
+                          })}
+                      </Select>
+                    </Form.Item>
 
-                      <Form.Item
+                    <Form.Item
+                      name="department"
+                      label="Phòng ban"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng chọn một phòng ban!",
+                        },
+                      ]}
+                    >
+                      <Select
+                        placeholder="Chọn một phòng ban..."
+                        allowClear
+                        showSearch
                         name="department"
-                        label="Phòng ban"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Vui lòng chọn một phòng ban!",
-                          },
-                        ]}
                       >
-                        <Select
-                          placeholder="Chọn một phòng ban..."
-                          allowClear
-                          showSearch
-                          name="department"
+                        {listDepartment?.length > 0 &&
+                          listDepartment.map((item) => {
+                            return (
+                              <Option key={item._id} value={item._id}>
+                                {item.departmentName}
+                              </Option>
+                            );
+                          })}
+                      </Select>
+                    </Form.Item>
+
+                    <Form.Item name="avatar" label="Ảnh đại diện" className="">
+                      <Space align="start">
+                        <Upload
+                          name="avatar"
+                          listType="picture-circle"
+                          className="avatar-uploader"
+                          showUploadList={false}
+                          fileList={[]}
+                          customRequest={(option) =>
+                            customUploadRequest(option, "avatar")
+                          }
+                          beforeUpload={beforeUpload}
+                          onChange={(e) => handleChange(e, true)}
                         >
-                          {listDepartment?.length > 0 &&
-                            listDepartment.map((item) => {
-                              return (
-                                <Option key={item._id} value={item._id}>
-                                  {item.departmentName}
-                                </Option>
-                              );
-                            })}
-                        </Select>
-                      </Form.Item>
+                          {imageEditUrl ? (
+                            <img
+                              src={imageEditUrl}
+                              alt="avatar"
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                borderRadius: "50%",
+                                objectFit: "contain",
+                              }}
+                            />
+                          ) : (
+                            uploadButton
+                          )}
+                        </Upload>
+                      </Space>
+                    </Form.Item>
 
-                      <Form.Item
-                        name="avatar"
-                        label="Ảnh đại diện"
-                        className=""
-                      >
-                        <Space align="start">
-                          <Upload
-                            name="avatar"
-                            listType="picture-circle"
-                            className="avatar-uploader"
-                            showUploadList={false}
-                            fileList={[]}
-                            customRequest={(option) =>
-                              customUploadRequest(option, "avatar")
-                            }
-                            beforeUpload={beforeUpload}
-                            onChange={(e) => handleChange(e, true)}
-                          >
-                            {imageEditUrl ? (
-                              <img
-                                src={imageEditUrl}
-                                alt="avatar"
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  borderRadius: "50%",
-                                  objectFit: "contain",
-                                }}
-                              />
-                            ) : (
-                              uploadButton
-                            )}
-                          </Upload>
-                        </Space>
-                      </Form.Item>
-
-                      <Form.Item
+                    <Form.Item
+                      name="activeStatus"
+                      label="Trạng thái"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng chọn một trạng thái!",
+                        },
+                      ]}
+                    >
+                      <Select
+                        placeholder="Chọn một trạng thái..."
+                        allowClear
+                        showSearch
                         name="activeStatus"
-                        label="Trạng thái"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Vui lòng chọn một trạng thái!",
-                          },
-                        ]}
                       >
-                        <Select
-                          placeholder="Chọn một trạng thái..."
-                          allowClear
-                          showSearch
-                          name="activeStatus"
-                        >
-                          {listStatus?.length > 0 &&
-                            listStatus.map((item) => {
-                              return (
-                                <Option key={item.value} value={item.value}>
-                                  {item.label}
-                                </Option>
-                              );
-                            })}
-                        </Select>
-                      </Form.Item>
-                    </Col>
+                        {listStatus?.length > 0 &&
+                          listStatus.map((item) => {
+                            return (
+                              <Option key={item.value} value={item.value}>
+                                {item.label}
+                              </Option>
+                            );
+                          })}
+                      </Select>
+                    </Form.Item>
                   </Row>
                   <Form.Item className="mt-3">
                     <Space>

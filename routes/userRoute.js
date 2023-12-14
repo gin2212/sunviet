@@ -53,5 +53,6 @@ router.get("/getAll", middlewares.authorize, userController.getAllUsers);
 router.get("/getById/:id", middlewares.authorize, userController.getUserById);
 router.get("/getPaging", middlewares.authorize, userController.getPaging);
 router.get("/getMyAction", middlewares.authorize, userController.getMyActions);
+router.get("/getMe", middlewares.authorize, userController.getMe);
 
 module.exports = router;
