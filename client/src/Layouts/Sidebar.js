@@ -5,48 +5,52 @@ import { useNavigate } from "react-router-dom";
 import { Menu, MenuItem } from "react-pro-sidebar";
 import logo from "../assets/images/logo.jpg";
 import { getMyAction } from "../services/api";
+import {
+  BiHomeCircle,
+  BiTask,
+  BiSync,
+  BiFile,
+  BiUser,
+  BiUserPlus,
+  BiCheckShield,
+} from "react-icons/bi";
 
 const { Sider } = Layout;
 
 const listMenu = [
   {
-    key: "home",
-    item: <HomeOutlined />,
-    label: "Trang chủ",
-  },
-  {
     key: "department",
-    item: <HomeOutlined />,
+    item: <BiHomeCircle />,
     label: "Phòng ban",
   },
   {
     key: "project",
-    item: <HomeOutlined />,
+    item: <BiTask />,
     label: "Dự án",
   },
   {
     key: "approval-process",
-    item: <HomeOutlined />,
+    item: <BiSync />,
     label: "Quy trình",
   },
   {
     key: "document",
-    item: <HomeOutlined />,
+    item: <BiFile />,
     label: "Tài liệu",
   },
   {
     key: "user",
-    item: <HomeOutlined />,
+    item: <BiUser />,
     label: "Nhân viên",
   },
   {
     key: "role",
-    item: <HomeOutlined />,
+    item: <BiUserPlus />,
     label: "Chức vụ",
   },
   {
     key: "role-action",
-    item: <HomeOutlined />,
+    item: <BiCheckShield />,
     label: "Quyền hạn",
   },
 ];
