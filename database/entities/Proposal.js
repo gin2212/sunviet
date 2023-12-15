@@ -1,3 +1,4 @@
+require("../database");
 const mongoose = require("mongoose");
 
 const commentSchema = new mongoose.Schema({
@@ -26,9 +27,16 @@ const approvalProcessSchema = new mongoose.Schema({
   steps: [stepSchema],
 });
 
+const clonedApprovalProcessSchema = new mongoose.Schema({
+  processName: { type: String, required: true },
+  steps: [stepSchema],
+});
+
 const proposalSchema = new mongoose.Schema({
   title: { type: String, required: true },
   file: { type: String },
+  signatureImage: { type: String },
+  category: { type: String },
   project: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Projects",
@@ -36,12 +44,21 @@ const proposalSchema = new mongoose.Schema({
   },
   selectedApprovalProcess: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "ApprovalProcess",
+    ref: "ClonedApprovalProcess",
   },
   status: {
     type: String,
     enum: ["Pending", "Approved", "Rejected"],
     default: "Pending",
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Users",
+    required: true,
+  },
+  createdTime: {
+    type: Date,
+    default: Date.now,
   },
 });
 
@@ -49,6 +66,12 @@ const ApprovalProcess = mongoose.model(
   "ApprovalProcess",
   approvalProcessSchema
 );
+
+const ClonedApprovalProcess = mongoose.model(
+  "ClonedApprovalProcess",
+  clonedApprovalProcessSchema
+);
+
 const Proposal = mongoose.model("Proposal", proposalSchema);
 
-module.exports = { ApprovalProcess, Proposal };
+module.exports = { ApprovalProcess, ClonedApprovalProcess, Proposal };

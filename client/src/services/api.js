@@ -195,3 +195,22 @@ export const getMyAction = () => {
 export const getMe = () => {
   return axios.get("api/user/getMe");
 };
+
+//Notify
+export const getNotify = (data) => {
+  return axios.get("api/user/getPaging", data);
+};
+
+//Proposal
+
+export const createProposal = (data) => {
+  return axios.post("api/proposal/create", data);
+};
+
+export const getPagingProposal = (data) => {
+  return axios.get("api/proposal/getPaging", data);
+};
+
+export const getByIdProposal = (id) => {
+  return axios.get(`api/proposal/getById/${id}`);
+};

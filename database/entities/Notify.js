@@ -17,6 +17,11 @@ let notifySchema = new Schema({
     ref: "Users",
     required: true,
   },
+  proposal: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Proposal",
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

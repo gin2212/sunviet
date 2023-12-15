@@ -37,7 +37,7 @@ let uploadFile = upload.single("image");
 router.post("/login", userController.login);
 router.post("/register", userController.register);
 router.post(
-  "/insert",
+  "/create",
   middlewares.authorize,
   uploadFile,
   userController.insertUser

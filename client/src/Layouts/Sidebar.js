@@ -34,6 +34,11 @@ const listMenu = [
     label: "Quy trình",
   },
   {
+    key: "proposal",
+    item: <BiFile />,
+    label: "Đề xuất",
+  },
+  {
     key: "document",
     item: <BiFile />,
     label: "Tài liệu",

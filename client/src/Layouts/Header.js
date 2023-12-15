@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import { Layout, Button, theme, Avatar, Dropdown, message, Form } from "antd";
 import { useNavigate } from "react-router-dom";
-import { updateUser, getMe, getNotify } from "../services/api";
+import { updateUser, getMe, getNotify, markAsRead } from "../services/api";
 import ModalChangePass from "./Modal/ModalChangePass";
 
 const { Header } = Layout;
@@ -23,6 +23,7 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
   const [imageEditUrl, setImageEditUrl] = useState();
   const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
+  const [listNoti, setListNoti] = useState();
 
   useEffect(() => {
     handleInfoUser();
@@ -38,7 +39,7 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
   const fetchData = async () => {
     const res = await getNotify();
     setListNoti(res?.data?.items);
-    setData([...data, ...newData]);
+    setData([...data, ...res.data]);
     setPage(page + 1);
   };
 

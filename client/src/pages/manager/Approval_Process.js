@@ -230,6 +230,7 @@ const Approval_Process = () => {
 
   const onClose = () => {
     setVisibleForm(false);
+    form.resetFields();
   };
 
   const handleCloseDrawer = () => {
@@ -294,7 +295,6 @@ const Approval_Process = () => {
               allowClear
               showSearch
               name="approvers"
-              mode="multiple"
             >
               {listUser?.length > 0 &&
                 listUser?.map((item) => {

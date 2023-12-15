@@ -4,23 +4,28 @@ const approvalProcessController = require("../controllers/approvalProcessControl
 const router = express.Router();
 const middlewares = require("./middlewares");
 const multer = require("multer");
+const fs = require("fs");
+const slugify = require("slugify");
 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    if (fs.existsSync(`public/files/${req.body.userId}`)) {
-      cb(null, `public/files/${req.body.userId}`);
+    if (fs.existsSync(`public/files/${req.userId}`)) {
+      cb(null, `public/files/${req.userId}`);
     } else {
-      fs.mkdir(`public/files/${req.body.userId}`, (err) => {
+      fs.mkdir(`public/files/${req.userId}`, (err) => {
         if (err) {
           return console.error(err);
         }
         console.log("Directory created successfully!");
-        cb(null, `public/files/${req.body.userId}`);
+        cb(null, `public/files/${req.userId}`);
       });
     }
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    const originalname = file.originalname;
+    const filename = `${slugify(originalname, { lower: true })}`;
+
+    cb(null, filename);
   },
 });
 
