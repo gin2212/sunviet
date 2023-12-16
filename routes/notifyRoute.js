@@ -9,6 +9,6 @@ router.get(
   notifyController.getPagingNotifies
 );
 router.post("/create", middlewares.authorize, notifyController.createNotify);
-router.put("/:id/read", middlewares.authorize, notifyController.markAsRead);
+router.put("/read/:id", middlewares.authorize, notifyController.markAsRead);
 
 module.exports = router;

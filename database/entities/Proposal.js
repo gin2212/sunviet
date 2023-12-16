@@ -37,6 +37,7 @@ const proposalSchema = new mongoose.Schema({
   file: { type: String },
   signatureImage: { type: String },
   category: { type: String },
+  content: { type: String },
   project: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Projects",
@@ -60,6 +61,7 @@ const proposalSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  comments: [commentSchema],
 });
 
 const ApprovalProcess = mongoose.model(

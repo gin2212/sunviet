@@ -45,6 +45,18 @@ img {
   margin-bottom: 8px;
 }
 
+.modal-info {
+  width: auto;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  background-color: rgb(245 245 245);
+  border-radius: 5px;
+  font-size: 16px;
+  padding-left: 10px;
+  margin-top: 7px;
+}
+
 .ant-dropdown {
   max-height: 80%;
 }

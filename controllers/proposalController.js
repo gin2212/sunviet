@@ -1,8 +1,19 @@
 const { Proposal } = require("../database/entities/Proposal");
 const { ApprovalProcess } = require("../database/entities/Proposal");
 const { ClonedApprovalProcess } = require("../database/entities/Proposal");
+const Notifies = require("../database/entities/Notify");
+const Users = require("../database/entities/authentication/Users");
 const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "winterwyvernwendy@gmail.com",
+    pass: "impslqjbynjvqnbw",
+  },
+});
 
 async function createProposal(req, res) {
   try {
@@ -33,20 +44,41 @@ async function createProposal(req, res) {
 
     const proposal = new Proposal({
       title: req.body.title,
-      file: req?.file
-        ? `public/files/${req.userId}/${req.file.filename}`
-        : undefined,
+      file: req?.file ? `files/${req.userId}/${req.file.filename}` : undefined,
       createdBy: req.userId,
       project: req.body.project,
       signatureImage: req.body.signatureImage,
       category: req.body.category,
       selectedApprovalProcess: clonedApprovalProcess._id,
+      content: req.body.content,
     });
 
     await proposal.save();
 
     let response = new ResponseModel(1, "Create proposal success!", proposal);
     res.json(response);
+
+    const userInfo = await Users.findById(
+      originalApprovalProcess.steps[0].approvers[0].user
+    );
+
+    const notify = new Notifies({
+      createdAt: Date.now(),
+      message: `có 1 đề xuất: ${response.data.title} cần được xử lý`,
+      recipient: userInfo._id,
+      proposal: response.data._id,
+    });
+
+    notify.save();
+
+    const mailOptions = {
+      from: "winterwyvernwendy@gmail.com",
+      to: userInfo.email,
+      subject: `có 1 đề xuất: ${response.data.title} cần được xử lý`,
+      text: "Có 1 đề xuất cần được xử lý",
+    };
+
+    await transporter.sendMail(mailOptions);
   } catch (error) {
     let response = new ResponseModel(500, error.message, error);
     res.status(500).json(response);
@@ -66,13 +98,20 @@ async function getAllProposals(req, res) {
 async function getProposalById(req, res) {
   try {
     let proposal = await Proposal.findById(req.params.id)
-      .populate("createdBy") // Populate thông tin người tạo đề xuất
-      .populate("project") // Populate thông tin dự án
+      .populate("createdBy")
+      .populate("project")
       .populate({
         path: "selectedApprovalProcess",
         populate: {
-          path: "steps.approvers.user steps.comments.user",
-          model: "Users", // Populate thông tin người duyệt và người bình luận
+          path: "steps.approvers.user",
+          model: "Users",
+        },
+      })
+      .populate({
+        path: "comments",
+        populate: {
+          path: "user",
+          model: "Users",
         },
       });
 
@@ -91,7 +130,7 @@ async function updateProposal(req, res) {
     };
 
     if (req?.file) {
-      newProposal.file = `public/files/${req.userId}/${req.file.filename}`;
+      newProposal.file = `files/${req.userId}/${req.file.filename}`;
     }
 
     let updatedProposal = await Departments.findOneAndUpdate(
@@ -151,40 +190,36 @@ async function getPagingProposals(req, res) {
       searchObj.createdBy = req.userId;
     }
 
-    if (req.query.type === 1) {
+    if (req.query.type == 2) {
       searchObj["selectedApprovalProcess.steps.approvers.user"] = req.userId;
       searchObj["selectedApprovalProcess.steps.approvers.status"] = "Approved";
     }
 
-    if (req.query.type === 2) {
+    if (req.query.type == 3) {
       searchObj["selectedApprovalProcess.steps.approvers.user"] = req.userId;
       searchObj["selectedApprovalProcess.steps.approvers.status"] = "Rejected";
     }
 
-    if (req.query.type === 3) {
-      // Lọc đề xuất ở bước duyệt của người dùng hiện tại
-      searchObj["selectedApprovalProcess.steps.approvers.user"] = req.userId;
-      searchObj["selectedApprovalProcess.steps.approvers.status"] = "Pending";
-    }
-
     let proposals = [];
 
-    if (req.query.type === 3) {
-      // Lấy danh sách các đề xuất ở bước duyệt của người dùng hiện tại
+    if (req.query.type == 1) {
       const proposalsAtCurrentStep = await Proposal.find({
-        "selectedApprovalProcess.steps.approvers.user": req.userId,
-        "selectedApprovalProcess.steps.approvers.status": "Pending",
+        createdBy: req.userId,
+        status: "Pending",
       })
-        .populate("createdBy project selectedApprovalProcess")
+        .sort({
+          createdTime: "desc",
+        })
+        .populate("createdBy")
+        .populate("project")
         .populate({
-          path: "selectedApprovalProcess.steps",
+          path: "selectedApprovalProcess",
           populate: {
-            path: "approvers.user comments.user",
+            path: "steps.approvers.user steps.comments.user",
             model: "Users",
           },
         });
 
-      // Lọc theo các điều kiện khác nếu cần
       proposals = proposalsAtCurrentStep.filter((proposal) =>
         Object.keys(searchObj).every((key) => proposal[key] === searchObj[key])
       );
@@ -195,11 +230,12 @@ async function getPagingProposals(req, res) {
         .sort({
           createdTime: "desc",
         })
-        .populate("createdBy project selectedApprovalProcess")
+        .populate("createdBy")
+        .populate("project")
         .populate({
-          path: "selectedApprovalProcess.steps",
+          path: "selectedApprovalProcess",
           populate: {
-            path: "approvers.user comments.user",
+            path: "steps.approvers.user steps.comments.user",
             model: "Users",
           },
         });
@@ -218,17 +254,28 @@ async function getPagingProposals(req, res) {
 async function approveStep(req, res) {
   try {
     const { proposalId } = req.params;
-    const { userId, comment } = req.body;
+    const userId = req.userId;
 
-    const proposal = await Proposal.findById(proposalId).populate(
-      "selectedApprovalProcess"
-    );
+    const proposal = await Proposal.findById(proposalId)
+      .populate("createdBy")
+      .populate("project")
+      .populate({
+        path: "selectedApprovalProcess",
+        populate: {
+          path: "steps.approvers.user steps.comments.user",
+          model: "Users",
+        },
+      });
 
     const { selectedApprovalProcess } = proposal;
     const { steps } = selectedApprovalProcess;
 
     const stepIndex = steps.findIndex((step) =>
-      step.approvers.some((approver) => approver.user.toString() === userId)
+      step.approvers.some(
+        (approver) =>
+          approver.user._id.toString() === userId &&
+          approver.status === "Pending"
+      )
     );
 
     if (stepIndex === -1) {
@@ -239,27 +286,66 @@ async function approveStep(req, res) {
 
     const currentStep = steps[stepIndex];
     currentStep.approvers.find(
-      (approver) => approver.user.toString() === userId
+      (approver) => approver.user._id.toString() === userId
     ).status = "Approved";
-    currentStep.comments.push({ user: userId, content: comment });
-
     const allApproved = currentStep.approvers.every(
       (approver) => approver.status === "Approved"
     );
 
     if (allApproved) {
-      if (stepIndex < steps.length - 1) {
-        steps[stepIndex + 1].approvers.forEach(
-          (approver) => (approver.status = "Pending")
-        );
+      if (stepIndex >= steps.length - 1) {
+        proposal.status = "Approved";
       }
-
-      proposal.status = "Pending";
 
       await proposal.save();
     }
 
-    res.status(200).json({ message: "Bước duyệt đã được duyệt." });
+    let clonedApprovalProcess = await ClonedApprovalProcess.findById(
+      proposal.selectedApprovalProcess._id
+    );
+    clonedApprovalProcess.steps[stepIndex].approvers[0].status = "Approved";
+    clonedApprovalProcess.save();
+
+    let response = new ResponseModel(1, "Bước duyệt đã được duyệt.", {
+      proposal,
+    });
+
+    res.json(response);
+
+    const notify = new Notifies({
+      createdAt: Date.now(),
+      message: `quy trình ${steps[stepIndex].stepName} của đề xuất ${proposal.title} đã được duyệt `,
+      recipient: proposal.createdBy._id,
+      proposal: proposal._id,
+    });
+
+    notify.save();
+
+    const mailOptions = {
+      from: "winterwyvernwendy@gmail.com",
+      to: proposal.createdBy.email,
+      subject: `quy trình ${steps[stepIndex].stepName} của đề xuất ${proposal.title} đã được duyệt `,
+      text: "Chúc mừng, bước duyệt đã được duyệt!",
+    };
+    // Gửi email
+    await transporter.sendMail(mailOptions);
+
+    if (stepIndex < steps.length - 1) {
+      const notify1 = new Notifies({
+        createdAt: Date.now(),
+        message: `có 1 đề xuất: ${proposal.title} cần được xử lý`,
+        recipient: steps[stepIndex + 1].approvers[0].user._id,
+        proposal: proposal._id,
+      });
+      notify1.save();
+      const mailOptions1 = {
+        from: "winterwyvernwendy@gmail.com",
+        to: steps[stepIndex + 1].approvers[0].user.email,
+        subject: `có 1 đề xuất: ${proposal.title} cần được xử lý`,
+        text: "Có 1 đề xuất cần được xử lý",
+      };
+      await transporter.sendMail(mailOptions1);
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -268,18 +354,25 @@ async function approveStep(req, res) {
 async function rejectStep(req, res) {
   try {
     const { proposalId } = req.params;
-    const { userId, comment } = req.body;
+    const userId = req.userId;
 
-    const proposal = await Proposal.findById(proposalId).populate(
-      "selectedApprovalProcess"
-    );
+    const proposal = await Proposal.findById(proposalId)
+      .populate("createdBy")
+      .populate("project")
+      .populate({
+        path: "selectedApprovalProcess",
+        populate: {
+          path: "steps.approvers.user steps.comments.user",
+          model: "Users",
+        },
+      });
 
     // Xác định stepIndex dựa trên userId
     const { selectedApprovalProcess } = proposal;
     const { steps } = selectedApprovalProcess;
 
     const stepIndex = steps.findIndex((step) =>
-      step.approvers.some((approver) => approver.user.toString() === userId)
+      step.approvers.some((approver) => approver.user._id.toString() === userId)
     );
 
     if (stepIndex === -1) {
@@ -287,18 +380,39 @@ async function rejectStep(req, res) {
         .status(400)
         .json({ message: "User không có quyền từ chối bước này." });
     }
+    let clonedApprovalProcess = await ClonedApprovalProcess.findById(
+      proposal.selectedApprovalProcess._id
+    );
 
-    const currentStep = steps[stepIndex];
-    currentStep.approvers.find(
-      (approver) => approver.user.toString() === userId
-    ).status = "Rejected";
-    currentStep.comments.push({ user: userId, content: comment });
-
+    clonedApprovalProcess.steps[stepIndex].approvers[0].status = "Rejected";
+    clonedApprovalProcess.save();
     proposal.status = "Rejected";
 
     await proposal.save();
 
-    res.status(200).json({ message: "Bước duyệt đã bị từ chối." });
+    let response = new ResponseModel(1, "Bước duyệt đã bị từ chối.", {
+      proposal,
+    });
+
+    res.json(response);
+
+    const notify = new Notifies({
+      createdAt: Date.now(),
+      message: `quy trình ${steps[stepIndex].stepName} của đề xuất ${proposal.title} đã bị từ chối `,
+      recipient: proposal.createdBy._id,
+      proposal: proposal._id,
+    });
+
+    notify.save();
+
+    const mailOptions = {
+      from: "winterwyvernwendy@gmail.com",
+      to: proposal.createdBy.email,
+      subject: `Quy trình ${steps[stepIndex].stepName} của đề xuất ${proposal.title} đã bị từ chối `,
+      text: `Đề xuất ${proposal.title} đã bị từ chối !`,
+    };
+    // Gửi email
+    await transporter.sendMail(mailOptions);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -307,17 +421,25 @@ async function rejectStep(req, res) {
 async function addComment(req, res) {
   try {
     const { proposalId } = req.params;
-    const { userId, commentContent } = req.body;
+    const { commentContent } = req.body;
+    const userId = req.userId;
 
-    const proposal = await Proposal.findById(proposalId).populate(
-      "selectedApprovalProcess"
-    );
+    const proposal = await Proposal.findById(proposalId)
+      .populate("createdBy")
+      .populate("project")
+      .populate({
+        path: "selectedApprovalProcess",
+        populate: {
+          path: "steps.approvers.user steps.comments.user",
+          model: "Users",
+        },
+      });
 
     const { selectedApprovalProcess } = proposal;
     const { steps } = selectedApprovalProcess;
 
     const stepIndex = steps.findIndex((step) =>
-      step.approvers.some((approver) => approver.user.toString() === userId)
+      step.approvers.some((approver) => approver.user._id.toString() === userId)
     );
 
     if (stepIndex === -1) {
@@ -326,12 +448,36 @@ async function addComment(req, res) {
         .json({ message: "User không có quyền thêm bình luận cho bước này." });
     }
 
-    const currentStep = steps[stepIndex];
-    currentStep.comments.push({ user: userId, content: commentContent });
+    proposal.comments.push({
+      user: userId,
+      content: commentContent,
+    });
 
     await proposal.save();
 
-    res.status(200).json({ message: "Bình luận đã được thêm vào bước duyệt." });
+    let response = new ResponseModel(1, "Bình luận thành công!", {
+      proposal,
+    });
+
+    res.json(response);
+
+    const notify = new Notifies({
+      createdAt: Date.now(),
+      message: `quy trình ${steps[stepIndex].stepName} của đề xuất ${proposal.title} có 1 bình luận mới `,
+      recipient: proposal.createdBy._id,
+      proposal: proposal._id,
+    });
+
+    notify.save();
+
+    const mailOptions = {
+      from: "winterwyvernwendy@gmail.com",
+      to: proposal.createdBy.email,
+      subject: `Quy trình ${steps[stepIndex].stepName} của đề xuất ${proposal.title} có 1 bình luận mới  `,
+      text: `Quy trình ${proposal.title} có 1 bình luận mới !`,
+    };
+    // Gửi email
+    await transporter.sendMail(mailOptions);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

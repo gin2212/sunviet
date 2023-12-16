@@ -51,12 +51,13 @@ const Proposal = () => {
   const [approvalProcess, setApprovalProcess] = useState();
   const [project, setProject] = useState();
   const [contentData, setContentData] = useState("");
+  const [type, setType] = useState(1);
+
   useEffect(() => {
     async function fetchData() {
       const dataRes = await getAllData();
       const dataProject = await getAllProject();
       const dataApproval = await getAllApprovalProcess();
-
       setListRole(dataRes);
       setApprovalProcess(dataApproval);
       setProject(dataProject);
@@ -97,6 +98,7 @@ const Proposal = () => {
             pageIndex: indexPage,
             pageSize: pageSize,
             search: "",
+            type: type,
           };
       const dataRes = await getPagingProposal(params);
       setTotalPage(dataRes.totalPages);
@@ -108,7 +110,7 @@ const Proposal = () => {
       setLoading(false);
       return dataRes?.data ? data : false;
     } catch (error) {
-      message.error("Lấy danh sách role thất bại!");
+      message.error("Lấy danh sách đề xuất thất bại!");
       setTotalPage(0);
       return [];
     }
@@ -154,6 +156,7 @@ const Proposal = () => {
     const params = {
       pageIndex: indexPage,
       pageSize: page_size,
+      type: type,
       ...getFormSearch(),
     };
 
@@ -198,23 +201,12 @@ const Proposal = () => {
     form.resetFields();
   };
   const handleRefresh = async () => {
-    const dataRes = await getAllData({ pageIndex: 1 });
+    const dataRes = await getAllData({ pageIndex: 1, type: type });
     setListRole(dataRes);
     setPageIndex(1);
     setContentData("");
     form.resetFields();
     formSearch.resetFields();
-  };
-
-  const handleSearch = async () => {
-    const dataForm = formSearch.getFieldsValue();
-    const params = {
-      pageIndex: 1,
-      pageSize: 10,
-      search: dataForm.roleName ? dataForm.roleName : "",
-    };
-    const dataRes = await getAllData(params);
-    setListRole(dataRes);
   };
 
   const showInfo = (id) => {
@@ -244,6 +236,18 @@ const Proposal = () => {
       dataIndex: "createdBy",
     },
     {
+      title: "Người duyệt",
+      dataIndex: "selectedApprovalProcess",
+      render: (_, record) => {
+        const userInfo = record.selectedApprovalProcess.steps.pop();
+        if (record?.status === "Approved") {
+          return userInfo?.approvers[0]?.user?.fullName;
+        } else {
+          return "Chưa được duyệt";
+        }
+      },
+    },
+    {
       title: "Trạng thái",
       dataIndex: "status",
       render: (_, { status }) => (
@@ -265,21 +269,22 @@ const Proposal = () => {
         </Tag>
       ),
     },
-    {
-      title: "tài liệu",
-      dataIndex: "file",
-      render: (_, record) => (
-        <Tooltip title="Tải file">
-          <Button
-            type="danger"
-            shape="circle"
-            icon={<FolderViewOutlined />}
-            size="large"
-            onClick={() => `${process.env.REACT_APP_API_URL}${record.file}`}
-          />
-        </Tooltip>
-      ),
-    },
+    // {
+    //   title: "tài liệu",
+    //   dataIndex: "file",
+    //   render: (_, record) => (
+    //     <a href={`${process.env.REACT_APP_API_URL}${record.file}`}>
+    //       <Tooltip title="Tải file">
+    //         <Button
+    //           type="danger"
+    //           shape="circle"
+    //           icon={<FolderViewOutlined />}
+    //           size="large"
+    //         />
+    //       </Tooltip>
+    //     </a>
+    //   ),
+    // },
     {
       title: "Thao tác",
       key: "action",
@@ -314,6 +319,12 @@ const Proposal = () => {
     setVisibleForm(false);
     form.resetFields();
     setSignatureDataUrl(null);
+  };
+  const handleChangType = async (value) => {
+    setType(value);
+
+    const dataRes = await getAllData({ pageIndex: 1, type: value });
+    setListRole(dataRes);
   };
 
   return (
@@ -353,12 +364,18 @@ const Proposal = () => {
               >
                 <Row>
                   <Col sm={3}>
-                    <Form.Item name="roleName" label="Filter">
-                      <Input
-                        placeholder="Nhập chức vụ..."
-                        name="roleName"
-                        allowClear={true}
-                      />
+                    <Form.Item label="Loại đề xuất" style={{ width: "250px" }}>
+                      <Select defaultValue={1} onChange={handleChangType}>
+                        <Option key={1} value={1}>
+                          Đề xuất của tôi
+                        </Option>
+                        <Option key={2} value={2}>
+                          Đề xuất đã duyệt
+                        </Option>
+                        <Option key={3} value={3}>
+                          Đề xuất đã từ chối
+                        </Option>
+                      </Select>
                     </Form.Item>
                   </Col>
                 </Row>

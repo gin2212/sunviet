@@ -141,17 +141,16 @@ function Document() {
       title: "tài liệu",
       dataIndex: "file",
       render: (_, record) => (
-        <Tooltip title="xem">
-          <Button
-            type="danger"
-            shape="circle"
-            icon={<FolderViewOutlined />}
-            size="large"
-            onClick={() =>
-              handlePreview(`${process.env.REACT_APP_API_URL}${record.file}`)
-            }
-          />
-        </Tooltip>
+        <a href={`${process.env.REACT_APP_API_URL}${record.file}`}>
+          <Tooltip title="Tải file">
+            <Button
+              type="danger"
+              shape="circle"
+              icon={<FolderViewOutlined />}
+              size="large"
+            />
+          </Tooltip>
+        </a>
       ),
     },
     {

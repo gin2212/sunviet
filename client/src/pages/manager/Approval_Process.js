@@ -39,6 +39,7 @@ const Approval_Process = () => {
   const [visibleForm, setVisibleForm] = useState(false);
   const [open, setOpen] = useState(false);
   const [listUser, setListUser] = useState();
+  const dataStorage = JSON.parse(localStorage.getItem("data"));
 
   useEffect(() => {
     fetchData();
@@ -151,10 +152,10 @@ const Approval_Process = () => {
       processName: data.processName,
       steps: data.users.map((userStep) => ({
         stepName: userStep.stepName,
-        approvers: userStep.approvers.map((approver) => ({
-          user: approver,
+        approvers: {
+          user: userStep.approvers,
           status: "Pending",
-        })),
+        },
         comments: [],
       })),
     };
@@ -298,11 +299,13 @@ const Approval_Process = () => {
             >
               {listUser?.length > 0 &&
                 listUser?.map((item) => {
-                  return (
-                    <Option key={item._id} value={item._id}>
-                      {item.fullName}
-                    </Option>
-                  );
+                  if (item._id !== dataStorage._id) {
+                    return (
+                      <Option key={item._id} value={item._id}>
+                        {item.fullName}
+                      </Option>
+                    );
+                  }
                 })}
             </Select>
           </Form.Item>
@@ -378,11 +381,7 @@ const Approval_Process = () => {
                           {users.map((user, index) => (
                             <li key={index} className="user">
                               <Space>{user.stepName}</Space>
-                              <div>
-                                {user?.approvers?.map((item) => {
-                                  return item;
-                                })}
-                              </div>
+                              <div>{user?.approvers}</div>
                             </li>
                           ))}
                         </ul>

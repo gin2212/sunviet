@@ -6,10 +6,20 @@ import {
   RollbackOutlined,
   BellOutlined,
 } from "@ant-design/icons";
-import { Layout, Button, theme, Avatar, Dropdown, message, Form } from "antd";
+import {
+  Layout,
+  Button,
+  theme,
+  Avatar,
+  Dropdown,
+  message,
+  Form,
+  Menu,
+} from "antd";
 import { useNavigate } from "react-router-dom";
 import { updateUser, getMe, getNotify, markAsRead } from "../services/api";
 import ModalChangePass from "./Modal/ModalChangePass";
+import moment from "moment";
 
 const { Header } = Layout;
 
@@ -21,9 +31,8 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
   const [image, setImage] = useState();
   const [imageUrl, setImageUrl] = useState();
   const [imageEditUrl, setImageEditUrl] = useState();
-  const [page, setPage] = useState(1);
-  const [data, setData] = useState([]);
   const [listNoti, setListNoti] = useState();
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     handleInfoUser();
@@ -38,9 +47,9 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
 
   const fetchData = async () => {
     const res = await getNotify();
-    setListNoti(res?.data?.items);
-    setData([...data, ...res.data]);
-    setPage(page + 1);
+
+    setTotal(res?.totalPages * res?.pageSize);
+    setListNoti(res?.data);
   };
 
   const handleScroll = () => {
@@ -106,6 +115,34 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
     },
   ];
 
+  const menu = (
+    <Menu>
+      {listNoti?.length > 0 ? (
+        listNoti?.map((item, index) => (
+          <Menu.Item key={index} onClick={() => handleRead(item)}>
+            <p> {item.message}</p>
+            <p> {moment(item?.createdAt).format("HH:mm DD/MM/YYYY")}</p>
+          </Menu.Item>
+        ))
+      ) : (
+        <Menu.Item>
+          <p> Không có thông báo mới</p>
+        </Menu.Item>
+      )}
+    </Menu>
+  );
+  const handleRead = async (item) => {
+    try {
+      const fetchData = await markAsRead(item._id);
+      if (fetchData.status === 1) {
+        fetchData();
+        navigate(`/proposal/${item._id}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <Header
@@ -129,14 +166,11 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
           </div>
           <div className="user-info">
             <div className="icon-ring">
-              <span className="number-noti"> 9</span>
-              <Dropdown
-                menu={{
-                  items: itemsSecondDropdown,
-                }}
-                trigger={["click"]}
-                placement="bottom"
-              >
+              {total > 0 && (
+                <span className="number-noti"> {total > 10 ? "10+" : ""}</span>
+              )}
+
+              <Dropdown overlay={menu} trigger={["click"]} placement="bottom">
                 <div onClick={(e) => e.preventDefault()}>
                   <BellOutlined
                     style={{

@@ -1,0 +1,206 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  max-width: 794px;
+  max-height: 1123px;
+  margin: 20px auto;
+}
+
+.app {
+  border: 2px solid #ccc;
+  padding: 10px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  object-fit: contain;
+  width: 70%;
+}
+
+.logo img {
+  width: 95%;
+}
+
+header .title {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header .title h1 {
+  text-transform: uppercase;
+  font-size: 28px;
+}
+header .title p {
+  font-size: 16px;
+  line-height: 26px;
+  text-align: justify;
+}
+
+.project-name {
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+.suggest {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.suggest-name {
+  display: flex;
+  position: relative;
+}
+
+.suggest-name:last-child {
+  width: 40%;
+}
+
+.suggest-name h3 {
+  margin-right: 50px;
+  font-size: 16px;
+}
+
+.under-dot-first-child {
+  position: absolute;
+  left: 50%;
+  top: 3px;
+}
+
+.under-dot {
+  position: absolute;
+  left: 30%;
+  top: 3px;
+}
+
+.suggest-content {
+  margin-top: 10px;
+}
+
+.suggest-content-name {
+  display: flex;
+  position: relative;
+}
+
+.suggest-content-name h3 {
+  font-size: 16px;
+  margin-right: 20px;
+}
+
+.suggest-content-under-dot {
+  position: absolute;
+  top: 2px;
+  left: 20%;
+}
+
+table {
+  margin-top: 10px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  text-transform: uppercase;
+}
+
+th {
+  padding: 5px;
+}
+
+tr td {
+  padding: 5px;
+}
+
+.proposer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.proposer-title,
+.full-name {
+  margin-right: 20%;
+}
+
+.opinion-proposer {
+  display: flex;
+  margin-top: 10px;
+}
+
+.opinion-proposer h4 {
+  margin-right: 6px;
+}
+
+.opinion-proposer-content {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.opinion-proposer-content span {
+  word-wrap: break-word;
+}
+
+.opinion-proposer-content span:first-child {
+  position: relative;
+  top: 4px;
+}
+
+.opinion-proposer-content span:last-child {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.done {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.done div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  width: 100%;
+  height: 100%;
+}
+
+.done div div {
+  width: 50%;
+  display: flex;
+  align-items: center;
+}
+
+.done div div h3 {
+  text-transform: uppercase;
+}
+
+.signature {
+  display: flex;
+  align-items: center;
+}
+
+.signature img {
+  width: 100%;
+  max-width: 200px;
+}
+
+.signature-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

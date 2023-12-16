@@ -1,14 +1,14 @@
 const { isValidObjectId } = require("mongoose");
-const Notifys = require("../database/entities/Notify");
+const Notifies = require("../database/entities/Notify");
 const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
 
 async function createNotify(req, res) {
   try {
-    let notify = new Notifys(req.body);
+    let notify = new Notifies(req.body);
     notify.createdAt = Date.now();
-    let newNotify = await action.notify();
-    let response = new ResponseModel(1, "Create notify success!", newNotify);
+    notify.save();
+    let response = new ResponseModel(1, "Create notify success!", notify);
     res.json(response);
   } catch (error) {
     let response = new ResponseModel(404, error.message, error);
@@ -19,14 +19,14 @@ async function createNotify(req, res) {
 async function markAsRead(req, res) {
   try {
     const { id } = req.params;
-    const notify = await Notifys.findById(id);
+    const notify = await Notifies.findById(id);
 
     if (!notify) {
       let response = new ResponseModel(0, "No item found!", null);
       return res.json(response);
     }
 
-    notify.isRead = true;
+    notify.isRead = 1;
     await notify.save();
 
     let response = new ResponseModel(1, "Đọc tin nhắn thành công!", notify);
@@ -41,17 +41,17 @@ async function getPagingNotifies(req, res) {
   let pageSize = req.query.pageSize || 10;
   let pageIndex = req.query.pageIndex || 1;
 
-  let searchObj = { recipient: req.userId }; // Chỉ lấy những notify cho recipient là req.userId và chưa đọc
+  let searchObj = { recipient: req.userId, isRead: 0 };
 
   try {
-    let notifies = await Notify.find(searchObj)
+    let notifies = await Notifies.find(searchObj)
       .skip(pageSize * pageIndex - pageSize)
       .limit(parseInt(pageSize))
       .sort({
         createdAt: "desc",
       });
 
-    let count = await Notify.find(searchObj).countDocuments();
+    let count = await Notifies.find(searchObj).countDocuments();
     let totalPages = Math.ceil(count / pageSize);
 
     let pagedModel = new PagedModel(pageIndex, pageSize, totalPages, notifies);

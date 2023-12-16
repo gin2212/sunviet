@@ -3,14 +3,14 @@ const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
-let notifySchema = new Schema({
+let Notifieschema = new Schema({
   message: {
     type: String,
     required: true,
   },
   isRead: {
     type: Boolean,
-    default: false,
+    default: 0,
   },
   recipient: {
     type: mongoose.Schema.Types.ObjectId,
@@ -28,4 +28,4 @@ let notifySchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("Notifys", notifySchema);
+module.exports = mongoose.model("Notifies", Notifieschema);

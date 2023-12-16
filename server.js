@@ -15,6 +15,7 @@ app.use("/", express.static(path.join(__dirname, "public/")));
 const port = process.env.PORT;
 
 const userRoute = require("./routes/userRoute");
+const notifyRoute = require("./routes/notifyRoute");
 const roleRoute = require("./routes/roleRoute");
 const actionRoute = require("./routes/actionRoute");
 const approvalProcessRoute = require("./routes/approvalProcessRoute");
@@ -37,6 +38,7 @@ app.use("/api/project", projectRoute);
 app.use("/api/proposal", proposalRoute);
 app.use("/api/document", documentlRoute);
 app.use("/api/roleaction", roleActionRoute);
+app.use("/api/notify", notifyRoute);
 
 app.listen(port, (req, res) => {
   console.log("server listening on port " + port);
