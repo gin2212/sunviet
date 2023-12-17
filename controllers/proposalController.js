@@ -32,11 +32,7 @@ async function createProposal(req, res) {
       processName: originalApprovalProcess.processName,
       steps: originalApprovalProcess.steps.map((step) => ({
         stepName: step.stepName,
-        approvers: step.approvers.map((approver) => ({
-          user: approver.user,
-          status: "Pending",
-        })),
-        comments: [],
+        approvers: { user: step.approvers.user, status: "Pending" },
       })),
     });
 
@@ -59,7 +55,7 @@ async function createProposal(req, res) {
     res.json(response);
 
     const userInfo = await Users.findById(
-      originalApprovalProcess.steps[0].approvers[0].user
+      originalApprovalProcess.steps[0].approvers.user
     );
 
     const notify = new Notifies({
@@ -186,10 +182,6 @@ async function getPagingProposals(req, res) {
     }
 
     // Bổ sung các bộ lọc mới
-    if (req.query.myProposals) {
-      searchObj.createdBy = req.userId;
-    }
-
     if (req.query.type == 2) {
       searchObj["selectedApprovalProcess.steps.approvers.user"] = req.userId;
       searchObj["selectedApprovalProcess.steps.approvers.status"] = "Approved";
@@ -200,12 +192,16 @@ async function getPagingProposals(req, res) {
       searchObj["selectedApprovalProcess.steps.approvers.status"] = "Rejected";
     }
 
+    if (req.query.type == 4) {
+      searchObj["selectedApprovalProcess.steps.approvers.user"] = req.userId;
+      searchObj["selectedApprovalProcess.steps.approvers.status"] = "Pending";
+    }
+
     let proposals = [];
 
     if (req.query.type == 1) {
       const proposalsAtCurrentStep = await Proposal.find({
         createdBy: req.userId,
-        status: "Pending",
       })
         .sort({
           createdTime: "desc",
@@ -215,7 +211,7 @@ async function getPagingProposals(req, res) {
         .populate({
           path: "selectedApprovalProcess",
           populate: {
-            path: "steps.approvers.user steps.comments.user",
+            path: "steps.approvers.user",
             model: "Users",
           },
         });
@@ -235,7 +231,7 @@ async function getPagingProposals(req, res) {
         .populate({
           path: "selectedApprovalProcess",
           populate: {
-            path: "steps.approvers.user steps.comments.user",
+            path: "steps.approvers.user",
             model: "Users",
           },
         });
@@ -270,12 +266,10 @@ async function approveStep(req, res) {
     const { selectedApprovalProcess } = proposal;
     const { steps } = selectedApprovalProcess;
 
-    const stepIndex = steps.findIndex((step) =>
-      step.approvers.some(
-        (approver) =>
-          approver.user._id.toString() === userId &&
-          approver.status === "Pending"
-      )
+    const stepIndex = steps.findIndex(
+      (step) =>
+        step.approvers.user._id.toString() === userId &&
+        step.approvers.status === "Pending"
     );
 
     if (stepIndex === -1) {
@@ -285,11 +279,9 @@ async function approveStep(req, res) {
     }
 
     const currentStep = steps[stepIndex];
-    currentStep.approvers.find(
-      (approver) => approver.user._id.toString() === userId
-    ).status = "Approved";
-    const allApproved = currentStep.approvers.every(
-      (approver) => approver.status === "Approved"
+    currentStep.approvers.status = "Approved";
+    const allApproved = currentStep.every(
+      (approver) => approver.approvers.status === "Approved"
     );
 
     if (allApproved) {
@@ -303,7 +295,7 @@ async function approveStep(req, res) {
     let clonedApprovalProcess = await ClonedApprovalProcess.findById(
       proposal.selectedApprovalProcess._id
     );
-    clonedApprovalProcess.steps[stepIndex].approvers[0].status = "Approved";
+    clonedApprovalProcess.steps[stepIndex].approvers.status = "Approved";
     clonedApprovalProcess.save();
 
     let response = new ResponseModel(1, "Bước duyệt đã được duyệt.", {
@@ -334,13 +326,13 @@ async function approveStep(req, res) {
       const notify1 = new Notifies({
         createdAt: Date.now(),
         message: `có 1 đề xuất: ${proposal.title} cần được xử lý`,
-        recipient: steps[stepIndex + 1].approvers[0].user._id,
+        recipient: steps[stepIndex + 1].approvers.user._id,
         proposal: proposal._id,
       });
       notify1.save();
       const mailOptions1 = {
         from: "winterwyvernwendy@gmail.com",
-        to: steps[stepIndex + 1].approvers[0].user.email,
+        to: steps[stepIndex + 1].approvers.user.email,
         subject: `có 1 đề xuất: ${proposal.title} cần được xử lý`,
         text: "Có 1 đề xuất cần được xử lý",
       };
@@ -370,9 +362,10 @@ async function rejectStep(req, res) {
     // Xác định stepIndex dựa trên userId
     const { selectedApprovalProcess } = proposal;
     const { steps } = selectedApprovalProcess;
-
-    const stepIndex = steps.findIndex((step) =>
-      step.approvers.some((approver) => approver.user._id.toString() === userId)
+    const stepIndex = steps.findIndex(
+      (step) =>
+        step.approvers.user._id.toString() === userId &&
+        step.approvers.status === "Pending"
     );
 
     if (stepIndex === -1) {
@@ -384,7 +377,7 @@ async function rejectStep(req, res) {
       proposal.selectedApprovalProcess._id
     );
 
-    clonedApprovalProcess.steps[stepIndex].approvers[0].status = "Rejected";
+    clonedApprovalProcess.steps[stepIndex].approvers.status = "Rejected";
     clonedApprovalProcess.save();
     proposal.status = "Rejected";
 
@@ -438,8 +431,10 @@ async function addComment(req, res) {
     const { selectedApprovalProcess } = proposal;
     const { steps } = selectedApprovalProcess;
 
-    const stepIndex = steps.findIndex((step) =>
-      step.approvers.some((approver) => approver.user._id.toString() === userId)
+    const stepIndex = steps.findIndex(
+      (step) =>
+        step.approvers.user._id.toString() === userId &&
+        step.approvers.status === "Pending"
     );
 
     if (stepIndex === -1) {

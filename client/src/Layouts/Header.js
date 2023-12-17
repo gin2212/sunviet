@@ -37,12 +37,6 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
   useEffect(() => {
     handleInfoUser();
     fetchData();
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
   }, []);
 
   const fetchData = async () => {
@@ -52,14 +46,6 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
     setListNoti(res?.data);
   };
 
-  const handleScroll = () => {
-    if (
-      window.innerHeight + window.scrollY >=
-      document.body.offsetHeight - 100
-    ) {
-      fetchData();
-    }
-  };
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -125,7 +111,7 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
           </Menu.Item>
         ))
       ) : (
-        <Menu.Item>
+        <Menu.Item key={1}>
           <p> Không có thông báo mới</p>
         </Menu.Item>
       )}
@@ -133,8 +119,8 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
   );
   const handleRead = async (item) => {
     try {
-      const fetchData = await markAsRead(item._id);
-      if (fetchData.status === 1) {
+      const data = await markAsRead(item._id);
+      if (data.status === 1) {
         fetchData();
         navigate(`/proposal/${item._id}`);
       }

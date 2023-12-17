@@ -18,8 +18,7 @@ const approverSchema = new mongoose.Schema({
 
 const stepSchema = new mongoose.Schema({
   stepName: { type: String, required: true },
-  approvers: [approverSchema],
-  comments: [commentSchema],
+  approvers: approverSchema,
 });
 
 const approvalProcessSchema = new mongoose.Schema({

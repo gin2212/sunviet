@@ -100,17 +100,14 @@ const Approval_Process = () => {
           {record.steps?.map((step, index) => (
             <div key={index}>
               <p>{step.stepName}</p>
-              {step?.approvers?.map((item, index1) => (
-                <Tag
-                  key={index1}
-                  color="cyan"
-                  style={{
-                    marginLeft: 3,
-                  }}
-                >
-                  {item.user.fullName}
-                </Tag>
-              ))}
+              <Tag
+                color="cyan"
+                style={{
+                  marginLeft: 3,
+                }}
+              >
+                {step.approvers.user.fullName}
+              </Tag>
             </div>
           ))}
         </div>

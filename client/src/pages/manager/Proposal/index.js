@@ -369,6 +369,9 @@ const Proposal = () => {
                         <Option key={1} value={1}>
                           Đề xuất của tôi
                         </Option>
+                        <Option key={4} value={4}>
+                          Đề xuất chờ duyệt
+                        </Option>
                         <Option key={2} value={2}>
                           Đề xuất đã duyệt
                         </Option>
