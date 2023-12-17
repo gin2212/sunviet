@@ -12,6 +12,7 @@ import {
   Modal,
   Select,
   Tag,
+  Table,
 } from "antd";
 import {
   EyeOutlined,
@@ -20,6 +21,7 @@ import {
 } from "@ant-design/icons";
 import {
   getPagingProposal,
+  getAllProposals,
   createProposal,
   getAllProject,
   getAllApprovalProcess,
@@ -52,16 +54,18 @@ const Proposal = () => {
   const [project, setProject] = useState();
   const [contentData, setContentData] = useState("");
   const [type, setType] = useState(1);
+  const dataStorage = JSON.parse(localStorage.getItem("data"));
 
   useEffect(() => {
     async function fetchData() {
-      const dataRes = await getAllData();
       const dataProject = await getAllProject();
       const dataApproval = await getAllApprovalProcess();
-      setListRole(dataRes);
       setApprovalProcess(dataApproval);
       setProject(dataProject);
     }
+    fetchData();
+  }, []);
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -92,23 +96,14 @@ const Proposal = () => {
 
   const getAllData = async (_prams, indexPage = 1) => {
     try {
-      const params = _prams
-        ? _prams
-        : {
-            pageIndex: indexPage,
-            pageSize: pageSize,
-            search: "",
-            type: type,
-          };
-      const dataRes = await getPagingProposal(params);
-      setTotalPage(dataRes.totalPages);
+      const dataRes = await getAllProposals();
       if (!dataRes) {
         return false;
       }
-      console.log(dataRes);
-      const data = convertDataTable(dataRes.data);
+
+      const data = convertDataTable(dataRes);
       setLoading(false);
-      return dataRes?.data ? data : false;
+      return dataRes ? data : false;
     } catch (error) {
       message.error("Lấy danh sách đề xuất thất bại!");
       setTotalPage(0);
@@ -129,7 +124,7 @@ const Proposal = () => {
           content: item?.content,
           selectedApprovalProcess: item?.selectedApprovalProcess,
           signatureImage: item?.signatureImage,
-          createdBy: item?.createdBy?.fullName,
+          createdBy: item?.createdBy,
           status: item?.status,
           createdTime: moment(item?.createdTime).format("DD/MM/YYYY HH:mm"),
         };
@@ -137,39 +132,40 @@ const Proposal = () => {
     return data ? data : [];
   };
 
-  const onPageChange = (page, page_size) => {
-    setPageIndex(page);
-    setPageSize(page_size);
-    onPageChangeAtSearch(page, page_size);
-  };
-
   const fetchData = async () => {
     const resListRole = await getAllData();
-    setListRole(resListRole);
-  };
+    let listConver;
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+    if (type === 1) {
+      listConver = resListRole?.filter(
+        (item) => item?.createdBy?._id === dataStorage?._id
+      );
+    } else if (type === 2) {
+      listConver = resListRole?.filter((proposal) =>
+        proposal.selectedApprovalProcess.steps.some(
+          (step) =>
+            step.approvers.status === "Approved" &&
+            step.approvers.user._id === dataStorage?._id
+        )
+      );
+    } else if (type === 3) {
+      listConver = resListRole?.filter((proposal) =>
+        proposal.selectedApprovalProcess.steps.some(
+          (step) =>
+            step.approvers.status === "Rejected" &&
+            step.approvers.user._id === dataStorage?._id
+        )
+      );
+    } else
+      listConver = resListRole?.filter((proposal) =>
+        proposal.selectedApprovalProcess.steps.some(
+          (step) =>
+            step.approvers.status === "Pending" &&
+            step.approvers.user._id === dataStorage?._id
+        )
+      );
 
-  const onPageChangeAtSearch = async (indexPage, page_size) => {
-    const params = {
-      pageIndex: indexPage,
-      pageSize: page_size,
-      type: type,
-      ...getFormSearch(),
-    };
-
-    const dataRes = await getAllData(params, indexPage);
-    setListRole(dataRes);
-  };
-
-  const getFormSearch = () => {
-    const dataForm = formSearch.getFieldsValue();
-
-    return {
-      roleName: dataForm.roleName || "",
-    };
+    setListRole(listConver);
   };
 
   const onFinish = async (data) => {
@@ -200,9 +196,43 @@ const Proposal = () => {
   const handleRefreshCreate = () => {
     form.resetFields();
   };
+
   const handleRefresh = async () => {
-    const dataRes = await getAllData({ pageIndex: 1, type: type });
-    setListRole(dataRes);
+    const resListRole = await getAllData();
+
+    let listConver;
+
+    if (type === 1) {
+      listConver = resListRole?.filter(
+        (item) => item?.createdBy?._id === dataStorage?._id
+      );
+    } else if (type === 2) {
+      listConver = resListRole?.filter((proposal) =>
+        proposal.selectedApprovalProcess.steps.some(
+          (step) =>
+            step.approvers.status === "Approved" &&
+            step.approvers.user._id === dataStorage?._id
+        )
+      );
+    } else if (type === 3) {
+      listConver = resListRole?.filter((proposal) =>
+        proposal.selectedApprovalProcess.steps.some(
+          (step) =>
+            step.approvers.status === "Rejected" &&
+            step.approvers.user._id === dataStorage?._id
+        )
+      );
+    } else {
+      listConver = resListRole?.filter((proposal) =>
+        proposal.selectedApprovalProcess.steps.some(
+          (step) =>
+            step.approvers.status === "Pending" &&
+            step.approvers.user._id === dataStorage?._id
+        )
+      );
+    }
+
+    setListRole(listConver);
     setPageIndex(1);
     setContentData("");
     form.resetFields();
@@ -234,6 +264,9 @@ const Proposal = () => {
     {
       title: "Người đề xuất",
       dataIndex: "createdBy",
+      render: (_, record) => {
+        return record.createdBy.fullName;
+      },
     },
     {
       title: "Người duyệt",
@@ -322,9 +355,40 @@ const Proposal = () => {
   };
   const handleChangType = async (value) => {
     setType(value);
+    const resListRole = await getAllData();
+    let listConver;
 
-    const dataRes = await getAllData({ pageIndex: 1, type: value });
-    setListRole(dataRes);
+    if (value === 1) {
+      listConver = resListRole?.filter(
+        (item) => item?.createdBy?._id === dataStorage?._id
+      );
+    } else if (value === 2) {
+      listConver = resListRole?.filter((proposal) =>
+        proposal.selectedApprovalProcess.steps.some(
+          (step) =>
+            step.approvers.status === "Approved" &&
+            step.approvers.user._id === dataStorage?._id
+        )
+      );
+    } else if (value === 3) {
+      listConver = resListRole?.filter((proposal) =>
+        proposal.selectedApprovalProcess.steps.some(
+          (step) =>
+            step.approvers.status === "Rejected" &&
+            step.approvers.user._id === dataStorage?._id
+        )
+      );
+    } else {
+      listConver = resListRole?.filter((proposal) =>
+        proposal.selectedApprovalProcess.steps.some(
+          (step) =>
+            step.approvers.status === "Pending" &&
+            step.approvers.user._id === dataStorage?._id
+        )
+      );
+    }
+
+    setListRole(listConver);
   };
 
   return (
@@ -588,7 +652,14 @@ const Proposal = () => {
               </Drawer>
             </Col>
           </div>
-          <DataTable
+          <Table
+            columns={columns}
+            dataSource={listRole}
+            // pagination={tableParams.pagination}
+            loading={loading}
+            // onChange={handleTableChange}
+          />
+          {/* <DataTable
             listData={listRole}
             pageSize={pageSize}
             columns={columns}
@@ -596,7 +667,7 @@ const Proposal = () => {
             totalPage={totalPage}
             onPageChange={onPageChange}
             loading={loading}
-          />
+          /> */}
         </Container>
       </div>
     </React.Fragment>

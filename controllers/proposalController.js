@@ -83,7 +83,19 @@ async function createProposal(req, res) {
 
 async function getAllProposals(req, res) {
   try {
-    let proposals = await Proposal.find({});
+    let proposals = await Proposal.find({})
+      .sort({
+        createdTime: "desc",
+      })
+      .populate("createdBy")
+      .populate("project")
+      .populate({
+        path: "selectedApprovalProcess",
+        populate: {
+          path: "steps.approvers.user",
+          model: "Users",
+        },
+      });
     res.json(proposals);
   } catch (error) {
     let response = new ResponseModel(404, error.message, error);

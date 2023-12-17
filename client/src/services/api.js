@@ -210,6 +210,10 @@ export const createProposal = (data) => {
   return axios.post("api/proposal/create", data);
 };
 
+export const getAllProposals = () => {
+  return axios.get("api/proposal/getAll");
+};
+
 export const getPagingProposal = (data) => {
   return axios.get("api/proposal/getPaging", data);
 };

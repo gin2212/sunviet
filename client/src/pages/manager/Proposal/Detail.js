@@ -145,7 +145,7 @@ function Detail() {
             <section className="modal-info">
               <span style={{ width: "20%" }}>Người duyệt:</span>
               {proposal?.status === "Approved" &&
-                proposal.selectedApprovalProcess.steps.pop()?.approvers[0]?.user
+                proposal.selectedApprovalProcess.steps.pop()?.approvers?.user
                   ?.fullName}
             </section>
             <section className="modal-info">
@@ -187,24 +187,24 @@ function Detail() {
                           Trạng thái:&nbsp;
                           <Tag
                             color={
-                              item?.approvers[0]?.status === "Approved"
+                              item?.approvers?.status === "Approved"
                                 ? "green"
-                                : item?.approvers[0]?.status === "Pending"
+                                : item?.approvers?.status === "Pending"
                                 ? "orange"
                                 : "red"
                             }
-                            key={item?.approvers[0]?.status}
+                            key={item?.approvers?.status}
                           >
-                            {item?.approvers[0]?.status === "Approved"
+                            {item?.approvers?.status === "Approved"
                               ? "Đã duyệt"
-                              : item?.approvers[0]?.status === "Pending"
+                              : item?.approvers?.status === "Pending"
                               ? "Chờ duyệt"
                               : "Đã từ chối"}
                           </Tag>
                         </p>
                         <p>
                           Người phê duyệt:&nbsp;
-                          {item?.approvers[0]?.user.fullName}
+                          {item?.approvers?.user.fullName}
                         </p>
                       </div>
                     );
@@ -212,45 +212,7 @@ function Detail() {
                 )}
               </div>
             </section>
-            <section className="modal-info" style={{ alignItems: "start" }}>
-              <span style={{ width: "20%", marginTop: "16px" }}>
-                Quy trình phê duyệt:
-              </span>
-              <div>
-                {proposal?.selectedApprovalProcess?.steps?.map(
-                  (item, index) => {
-                    return (
-                      <div key={index}>
-                        <p>{item.stepName}</p>
-                        <p>
-                          Trạng thái:&nbsp;
-                          <Tag
-                            color={
-                              item?.approvers[0]?.status === "Approved"
-                                ? "green"
-                                : item?.approvers[0]?.status === "Pending"
-                                ? "orange"
-                                : "red"
-                            }
-                            key={item?.approvers[0]?.status}
-                          >
-                            {item?.approvers[0]?.status === "Approved"
-                              ? "Đã duyệt"
-                              : item?.approvers[0]?.status === "Pending"
-                              ? "Chờ duyệt"
-                              : "Đã từ chối"}
-                          </Tag>
-                        </p>
-                        <p>
-                          Người phê duyệt:&nbsp;
-                          {item?.approvers[0]?.user.fullName}
-                        </p>
-                      </div>
-                    );
-                  }
-                )}
-              </div>
-            </section>
+
             <section className="modal-info" style={{ alignItems: "start" }}>
               <span style={{ width: "20%", marginTop: "16px" }}>
                 Bình luận:
@@ -270,8 +232,8 @@ function Detail() {
         {proposal?.status !== "Rejected" &&
           proposal?.selectedApprovalProcess?.steps?.find(
             (item) =>
-              item.approvers[0].user._id === dataStorage._id &&
-              item.approvers[0].status === "Pending"
+              item.approvers.user._id === dataStorage._id &&
+              item.approvers.status === "Pending"
           ) && (
             <div
               style={{
