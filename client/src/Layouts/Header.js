@@ -42,7 +42,7 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
   const fetchData = async () => {
     const res = await getNotify();
 
-    setTotal(res?.totalPages * res?.pageSize);
+    setTotal(res?.totalPages);
     setListNoti(res?.data);
   };
 
@@ -153,7 +153,9 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
           <div className="user-info">
             <div className="icon-ring">
               {total > 0 && (
-                <span className="number-noti"> {total > 10 ? "10+" : ""}</span>
+                <span className="number-noti">
+                  {total > 10 ? "10+" : total}
+                </span>
               )}
 
               <Dropdown overlay={menu} trigger={["click"]} placement="bottom">

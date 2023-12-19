@@ -98,7 +98,8 @@ function Project() {
       title: "Tên phòng ban",
       dataIndex: "department",
       render: (_, { department }) => {
-        return department.departmentName;
+        if (department?.departmentName) return department?.departmentName;
+        else return "Chưa có phòng ban";
       },
     },
     {

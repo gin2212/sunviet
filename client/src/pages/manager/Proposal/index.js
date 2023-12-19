@@ -141,29 +141,73 @@ const Proposal = () => {
         (item) => item?.createdBy?._id === dataStorage?._id
       );
     } else if (type === 2) {
-      listConver = resListRole?.filter((proposal) =>
-        proposal.selectedApprovalProcess.steps.some(
-          (step) =>
-            step.approvers.status === "Approved" &&
-            step.approvers.user._id === dataStorage?._id
-        )
-      );
+      listConver = resListRole?.filter((proposal) => {
+        let isCurrentUserCanSee = false;
+
+        for (
+          let i = 0;
+          i < proposal.selectedApprovalProcess.steps.length;
+          i++
+        ) {
+          const step = proposal.selectedApprovalProcess.steps[i];
+          if (step.approvers.status === "Approved") {
+            if (step.approvers.user._id === dataStorage?._id) {
+              isCurrentUserCanSee = true;
+              break;
+            } else {
+              break;
+            }
+          }
+        }
+
+        return isCurrentUserCanSee;
+      });
     } else if (type === 3) {
-      listConver = resListRole?.filter((proposal) =>
-        proposal.selectedApprovalProcess.steps.some(
-          (step) =>
-            step.approvers.status === "Rejected" &&
-            step.approvers.user._id === dataStorage?._id
-        )
-      );
-    } else
-      listConver = resListRole?.filter((proposal) =>
-        proposal.selectedApprovalProcess.steps.some(
-          (step) =>
-            step.approvers.status === "Pending" &&
-            step.approvers.user._id === dataStorage?._id
-        )
-      );
+      listConver = resListRole?.filter((proposal) => {
+        let isCurrentUserCanSee = false;
+
+        for (
+          let i = 0;
+          i < proposal.selectedApprovalProcess.steps.length;
+          i++
+        ) {
+          const step = proposal.selectedApprovalProcess.steps[i];
+          if (step.approvers.status === "Rejected") {
+            if (step.approvers.user._id === dataStorage?._id) {
+              isCurrentUserCanSee = true;
+              break;
+            } else {
+              break;
+            }
+          }
+        }
+
+        return isCurrentUserCanSee;
+      });
+    } else {
+      listConver = resListRole?.filter((proposal) => {
+        let isCurrentUserCanSee = false;
+
+        // Kiểm tra từng bước trong selectedApprovalProcess
+        for (
+          let i = 0;
+          i < proposal.selectedApprovalProcess.steps.length;
+          i++
+        ) {
+          const step = proposal.selectedApprovalProcess.steps[i];
+          if (step.approvers.status === "Pending") {
+            if (step.approvers.user._id === dataStorage?._id) {
+              isCurrentUserCanSee = true;
+              break;
+            } else {
+              break;
+            }
+          }
+        }
+
+        return isCurrentUserCanSee;
+      });
+    }
 
     setListRole(listConver);
   };
@@ -207,29 +251,72 @@ const Proposal = () => {
         (item) => item?.createdBy?._id === dataStorage?._id
       );
     } else if (type === 2) {
-      listConver = resListRole?.filter((proposal) =>
-        proposal.selectedApprovalProcess.steps.some(
-          (step) =>
-            step.approvers.status === "Approved" &&
-            step.approvers.user._id === dataStorage?._id
-        )
-      );
+      listConver = resListRole?.filter((proposal) => {
+        let isCurrentUserCanSee = false;
+
+        for (
+          let i = 0;
+          i < proposal.selectedApprovalProcess.steps.length;
+          i++
+        ) {
+          const step = proposal.selectedApprovalProcess.steps[i];
+          if (step.approvers.status === "Approved") {
+            if (step.approvers.user._id === dataStorage?._id) {
+              isCurrentUserCanSee = true;
+              break;
+            } else {
+              break;
+            }
+          }
+        }
+
+        return isCurrentUserCanSee;
+      });
     } else if (type === 3) {
-      listConver = resListRole?.filter((proposal) =>
-        proposal.selectedApprovalProcess.steps.some(
-          (step) =>
-            step.approvers.status === "Rejected" &&
-            step.approvers.user._id === dataStorage?._id
-        )
-      );
+      listConver = resListRole?.filter((proposal) => {
+        let isCurrentUserCanSee = false;
+
+        for (
+          let i = 0;
+          i < proposal.selectedApprovalProcess.steps.length;
+          i++
+        ) {
+          const step = proposal.selectedApprovalProcess.steps[i];
+          if (step.approvers.status === "Rejected") {
+            if (step.approvers.user._id === dataStorage?._id) {
+              isCurrentUserCanSee = true;
+              break;
+            } else {
+              break;
+            }
+          }
+        }
+
+        return isCurrentUserCanSee;
+      });
     } else {
-      listConver = resListRole?.filter((proposal) =>
-        proposal.selectedApprovalProcess.steps.some(
-          (step) =>
-            step.approvers.status === "Pending" &&
-            step.approvers.user._id === dataStorage?._id
-        )
-      );
+      listConver = resListRole?.filter((proposal) => {
+        let isCurrentUserCanSee = false;
+
+        // Kiểm tra từng bước trong selectedApprovalProcess
+        for (
+          let i = 0;
+          i < proposal.selectedApprovalProcess.steps.length;
+          i++
+        ) {
+          const step = proposal.selectedApprovalProcess.steps[i];
+          if (step.approvers.status === "Pending") {
+            if (step.approvers.user._id === dataStorage?._id) {
+              isCurrentUserCanSee = true;
+              break;
+            } else {
+              break;
+            }
+          }
+        }
+
+        return isCurrentUserCanSee;
+      });
     }
 
     setListRole(listConver);
@@ -265,7 +352,7 @@ const Proposal = () => {
       title: "Người đề xuất",
       dataIndex: "createdBy",
       render: (_, record) => {
-        return record.createdBy.fullName;
+        return record?.createdBy?.fullName;
       },
     },
     {
@@ -363,29 +450,72 @@ const Proposal = () => {
         (item) => item?.createdBy?._id === dataStorage?._id
       );
     } else if (value === 2) {
-      listConver = resListRole?.filter((proposal) =>
-        proposal.selectedApprovalProcess.steps.some(
-          (step) =>
-            step.approvers.status === "Approved" &&
-            step.approvers.user._id === dataStorage?._id
-        )
-      );
+      listConver = resListRole?.filter((proposal) => {
+        let isCurrentUserCanSee = false;
+
+        for (
+          let i = 0;
+          i < proposal.selectedApprovalProcess.steps.length;
+          i++
+        ) {
+          const step = proposal.selectedApprovalProcess.steps[i];
+          if (step.approvers.status === "Approved") {
+            if (step.approvers.user._id === dataStorage?._id) {
+              isCurrentUserCanSee = true;
+              break;
+            } else {
+              break;
+            }
+          }
+        }
+
+        return isCurrentUserCanSee;
+      });
     } else if (value === 3) {
-      listConver = resListRole?.filter((proposal) =>
-        proposal.selectedApprovalProcess.steps.some(
-          (step) =>
-            step.approvers.status === "Rejected" &&
-            step.approvers.user._id === dataStorage?._id
-        )
-      );
+      listConver = resListRole?.filter((proposal) => {
+        let isCurrentUserCanSee = false;
+
+        for (
+          let i = 0;
+          i < proposal.selectedApprovalProcess.steps.length;
+          i++
+        ) {
+          const step = proposal.selectedApprovalProcess.steps[i];
+          if (step.approvers.status === "Rejected") {
+            if (step.approvers.user._id === dataStorage?._id) {
+              isCurrentUserCanSee = true;
+              break;
+            } else {
+              break;
+            }
+          }
+        }
+
+        return isCurrentUserCanSee;
+      });
     } else {
-      listConver = resListRole?.filter((proposal) =>
-        proposal.selectedApprovalProcess.steps.some(
-          (step) =>
-            step.approvers.status === "Pending" &&
-            step.approvers.user._id === dataStorage?._id
-        )
-      );
+      listConver = resListRole?.filter((proposal) => {
+        let isCurrentUserCanSee = false;
+
+        // Kiểm tra từng bước trong selectedApprovalProcess
+        for (
+          let i = 0;
+          i < proposal.selectedApprovalProcess.steps.length;
+          i++
+        ) {
+          const step = proposal.selectedApprovalProcess.steps[i];
+          if (step.approvers.status === "Pending") {
+            if (step.approvers.user._id === dataStorage?._id) {
+              isCurrentUserCanSee = true;
+              break;
+            } else {
+              break;
+            }
+          }
+        }
+
+        return isCurrentUserCanSee;
+      });
     }
 
     setListRole(listConver);

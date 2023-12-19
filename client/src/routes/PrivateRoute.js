@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 const PrivateRoute = ({ element }) => {
   const isLogin = localStorage.getItem("accessToken");
 
-  if (!isLogin || Date.now() > parseInt(isLogin, 10)) {
+  if (!isLogin) {
     return <Navigate to="/login" />;
   }
 

@@ -270,7 +270,7 @@ async function approveStep(req, res) {
       .populate({
         path: "selectedApprovalProcess",
         populate: {
-          path: "steps.approvers.user steps.comments.user",
+          path: "steps.approvers.user",
           model: "Users",
         },
       });
@@ -290,17 +290,8 @@ async function approveStep(req, res) {
         .json({ message: "User không có quyền duyệt bước này." });
     }
 
-    const currentStep = steps[stepIndex];
-    currentStep.approvers.status = "Approved";
-    const allApproved = currentStep.every(
-      (approver) => approver.approvers.status === "Approved"
-    );
-
-    if (allApproved) {
-      if (stepIndex >= steps.length - 1) {
-        proposal.status = "Approved";
-      }
-
+    if (stepIndex >= steps.length - 1) {
+      proposal.status = "Approved";
       await proposal.save();
     }
 
@@ -366,7 +357,7 @@ async function rejectStep(req, res) {
       .populate({
         path: "selectedApprovalProcess",
         populate: {
-          path: "steps.approvers.user steps.comments.user",
+          path: "steps.approvers.user",
           model: "Users",
         },
       });
@@ -385,6 +376,7 @@ async function rejectStep(req, res) {
         .status(400)
         .json({ message: "User không có quyền từ chối bước này." });
     }
+
     let clonedApprovalProcess = await ClonedApprovalProcess.findById(
       proposal.selectedApprovalProcess._id
     );
@@ -435,7 +427,7 @@ async function addComment(req, res) {
       .populate({
         path: "selectedApprovalProcess",
         populate: {
-          path: "steps.approvers.user steps.comments.user",
+          path: "steps.approvers.user",
           model: "Users",
         },
       });

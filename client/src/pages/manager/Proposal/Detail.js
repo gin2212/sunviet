@@ -6,7 +6,7 @@ import moment from "moment";
 import { approve, reject, comment } from "../../../services/api";
 import { BiPrinter } from "react-icons/bi";
 import ReactToPrint from "react-to-print";
-// import "./style.css";
+import "./style.css";
 
 function Detail() {
   const { id } = useParams();
@@ -116,7 +116,10 @@ function Detail() {
                 content={() => componentRef}
               />
               <div style={{ display: "none" }}>
-                <ComponentToPrint ref={(el) => (componentRef = el)} />
+                <ComponentToPrint
+                  ref={(el) => (componentRef = el)}
+                  info={proposal}
+                />
               </div>
             </div>
           </header>
@@ -230,74 +233,103 @@ function Detail() {
           </main>
         </div>
         {proposal?.status !== "Rejected" &&
-          proposal?.selectedApprovalProcess?.steps?.find(
-            (item) =>
-              item.approvers.user._id === dataStorage._id &&
-              item.approvers.status === "Pending"
-          ) && (
-            <div
-              style={{
-                marginTop: "30px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "50%",
-                margin: "50px auto",
-              }}
-            >
-              <Form
-                name="basic"
-                style={{
-                  width: "100%",
-                }}
-                onFinish={handleComment}
-                autoComplete="off"
-              >
-                <div className="ant-col ant-form-item-label">
-                  <label
-                    htmlFor="content"
-                    className="ant-form-item-required"
-                    title="Post Content"
-                  >
-                    Bình luận
-                  </label>
-                </div>
-                <textarea
-                  value={commentDataa}
-                  onChange={(e) => setCommentData(e.target.value)}
-                  className="form-control"
-                  style={{ width: "100%" }}
-                  rows="5"
-                ></textarea>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    gap: "20px",
-                  }}
-                >
-                  {commentDataa !== "" && (
-                    <Button type="primary" htmlType="submit">
-                      Bình luận
-                    </Button>
-                  )}
-                  <Button
-                    onClick={handleApproval}
-                    style={{
-                      backgroundColor: "#28a745",
-                      color: "#fff",
-                      boxShadow: "0 2px 0 rgba(5, 145, 255, 0.1)",
-                    }}
-                  >
-                    Duyệt đề xuất
-                  </Button>
-                  <Button type="primary" danger onClick={handleReject}>
-                    Từ chối đề xuất
-                  </Button>
-                </div>
-              </Form>
-            </div>
-          )}
+          (() => {
+            for (
+              let i = 0;
+              i < proposal?.selectedApprovalProcess?.steps?.length;
+              i++
+            ) {
+              const step = proposal?.selectedApprovalProcess?.steps[i];
+              if (step.approvers.status === "Pending") {
+                if (step.approvers.user._id === dataStorage?._id) {
+                  return (
+                    <div key={i}>
+                      {
+                        <div
+                          style={{
+                            marginTop: "30px",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            width: "50%",
+                            margin: "50px auto",
+                          }}
+                        >
+                          <Form
+                            name="basic"
+                            style={{
+                              width: "100%",
+                            }}
+                            onFinish={handleComment}
+                            autoComplete="off"
+                          >
+                            {proposal?.comments?.some(
+                              (value) => value?.user?._id === dataStorage?._id
+                            ) ? null : (
+                              <>
+                                <div className="ant-col ant-form-item-label">
+                                  <label
+                                    htmlFor="content"
+                                    className="ant-form-item-required"
+                                    title="Post Content"
+                                  >
+                                    Bình luận
+                                  </label>
+                                </div>
+                                <textarea
+                                  value={commentDataa}
+                                  onChange={(e) =>
+                                    setCommentData(e.target.value)
+                                  }
+                                  className="form-control"
+                                  style={{ width: "100%" }}
+                                  rows="5"
+                                ></textarea>
+                              </>
+                            )}
+
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                                gap: "20px",
+                              }}
+                            >
+                              {commentDataa !== "" && (
+                                <Button type="primary" htmlType="submit">
+                                  Bình luận
+                                </Button>
+                              )}
+                              <Button
+                                onClick={handleApproval}
+                                style={{
+                                  backgroundColor: "#28a745",
+                                  color: "#fff",
+                                  boxShadow: "0 2px 0 rgba(5, 145, 255, 0.1)",
+                                }}
+                              >
+                                Duyệt đề xuất
+                              </Button>
+                              <Button
+                                type="primary"
+                                danger
+                                onClick={handleReject}
+                              >
+                                Từ chối đề xuất
+                              </Button>
+                            </div>
+                          </Form>
+                        </div>
+                      }
+                    </div>
+                  );
+                } else {
+                  break;
+                }
+              }
+            }
+            return null;
+          })()}
       </div>
     </div>
   );
@@ -307,6 +339,8 @@ export default Detail;
 
 class ComponentToPrint extends React.Component {
   render() {
+    const info = this.props.info;
+    console.log(info);
     return (
       <div class="app">
         <header>

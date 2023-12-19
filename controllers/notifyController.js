@@ -52,7 +52,7 @@ async function getPagingNotifies(req, res) {
       });
 
     let count = await Notifies.find(searchObj).countDocuments();
-    let totalPages = Math.ceil(count / pageSize);
+    let totalPages = Math.ceil(count);
 
     let pagedModel = new PagedModel(pageIndex, pageSize, totalPages, notifies);
     res.json(pagedModel);

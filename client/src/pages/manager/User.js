@@ -230,16 +230,16 @@ const Users = () => {
     );
 
     form.setFieldsValue({
-      id: dataEdit[0].key,
-      userName: dataEdit[0].userName,
-      fullName: dataEdit[0].fullName,
-      phoneNumber: dataEdit[0].phoneNumber,
-      email: dataEdit[0].email,
-      activeStatus: dataStatus[0].value,
-      roleName: dataRole[0].roleName,
-      role: dataRole[0]._id,
-      urlSocical: dataEdit[0].urlSocical,
-      department: dataEdit[0].department?._id || null,
+      id: dataEdit[0]?.key,
+      userName: dataEdit[0]?.userName,
+      fullName: dataEdit[0]?.fullName,
+      phoneNumber: dataEdit[0]?.phoneNumber,
+      email: dataEdit[0]?.email,
+      activeStatus: dataStatus[0]?.value,
+      roleName: dataRole[0]?.roleName,
+      role: dataRole[0]?._id,
+      urlSocical: dataEdit[0]?.urlSocical,
+      department: dataEdit[0]?.department?._id || null,
     });
     setImageEditUrl(
       `${process.env.REACT_APP_API_URL}images/${dataEdit[0]?.avatar}`
@@ -305,7 +305,8 @@ const Users = () => {
       title: "Phòng ban",
       dataIndex: "department",
       render: (_, { department }) => {
-        return department.departmentName;
+        if (department?.departmentName) return department?.departmentName;
+        else return "Chưa có phòng ban";
       },
     },
     {

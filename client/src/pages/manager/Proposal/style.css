@@ -1,176 +1,177 @@
-* {
+#print_component * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
 }
 
-body {
+#print_component body {
   max-width: 794px;
   max-height: 1123px;
   margin: 20px auto;
 }
 
-.app {
+#print_component .app {
   border: 2px solid #ccc;
   padding: 10px;
 }
 
-header {
+#print_component header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.logo {
+#print_component .logo {
   object-fit: contain;
   width: 70%;
 }
 
-.logo img {
+#print_component .logo img {
   width: 95%;
 }
 
-header .title {
+#print_component header .title {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-header .title h1 {
+#print_component header .title h1 {
   text-transform: uppercase;
   font-size: 28px;
 }
-header .title p {
+
+#print_component header .title p {
   font-size: 16px;
   line-height: 26px;
   text-align: justify;
 }
 
-.project-name {
+#print_component .project-name {
   width: 100%;
   text-align: center;
   font-size: 18px;
   margin-top: 10px;
 }
 
-.suggest {
+#print_component .suggest {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
 }
 
-.suggest-name {
+#print_component .suggest-name {
   display: flex;
   position: relative;
 }
 
-.suggest-name:last-child {
+#print_component .suggest-name:last-child {
   width: 40%;
 }
 
-.suggest-name h3 {
+#print_component .suggest-name h3 {
   margin-right: 50px;
   font-size: 16px;
 }
 
-.under-dot-first-child {
+#print_component .under-dot-first-child {
   position: absolute;
   left: 50%;
   top: 3px;
 }
 
-.under-dot {
+#print_component .under-dot {
   position: absolute;
   left: 30%;
   top: 3px;
 }
 
-.suggest-content {
+#print_component .suggest-content {
   margin-top: 10px;
 }
 
-.suggest-content-name {
+#print_component .suggest-content-name {
   display: flex;
   position: relative;
 }
 
-.suggest-content-name h3 {
+#print_component .suggest-content-name h3 {
   font-size: 16px;
   margin-right: 20px;
 }
 
-.suggest-content-under-dot {
+#print_component .suggest-content-under-dot {
   position: absolute;
   top: 2px;
   left: 20%;
 }
 
-table {
+#print_component table {
   margin-top: 10px;
   width: 100%;
   border-collapse: collapse;
 }
 
-thead {
+#print_component thead {
   text-transform: uppercase;
 }
 
-th {
+#print_component th {
   padding: 5px;
 }
 
-tr td {
+#print_component tr td {
   padding: 5px;
 }
 
-.proposer {
+#print_component .proposer {
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
 }
 
-.proposer-title,
-.full-name {
+#print_component .proposer-title,
+#print_component .full-name {
   margin-right: 20%;
 }
 
-.opinion-proposer {
+#print_component .opinion-proposer {
   display: flex;
   margin-top: 10px;
 }
 
-.opinion-proposer h4 {
+#print_component .opinion-proposer h4 {
   margin-right: 6px;
 }
 
-.opinion-proposer-content {
+#print_component .opinion-proposer-content {
   width: 100%;
   overflow: hidden;
   position: relative;
 }
 
-.opinion-proposer-content span {
+#print_component .opinion-proposer-content span {
   word-wrap: break-word;
 }
 
-.opinion-proposer-content span:first-child {
+#print_component .opinion-proposer-content span:first-child {
   position: relative;
   top: 4px;
 }
 
-.opinion-proposer-content span:last-child {
+#print_component .opinion-proposer-content span:last-child {
   position: absolute;
   top: 0;
   left: 0;
 }
 
-.done {
+#print_component .done {
   width: 100%;
   margin-top: 20px;
 }
 
-.done div {
+#print_component .done div {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -179,27 +180,27 @@ tr td {
   height: 100%;
 }
 
-.done div div {
+#print_component .done div div {
   width: 50%;
   display: flex;
   align-items: center;
 }
 
-.done div div h3 {
+#print_component .done div div h3 {
   text-transform: uppercase;
 }
 
-.signature {
+#print_component .signature {
   display: flex;
   align-items: center;
 }
 
-.signature img {
+#print_component .signature img {
   width: 100%;
   max-width: 200px;
 }
 
-.signature-footer {
+#print_component .signature-footer {
   display: flex;
   flex-direction: column;
   align-items: center;
