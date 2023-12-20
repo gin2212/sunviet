@@ -21,6 +21,15 @@ const stepSchema = new mongoose.Schema({
   approvers: approverSchema,
 });
 
+const proposalContentSchema = new mongoose.Schema({
+  content: { type: String, required: true },
+  agency: { type: Number, required: true, default: 1 },
+  mass: { type: Number, required: true, default: 1 },
+  unitPrice: { type: Number, required: true, default: 1 },
+  totalCost: { type: Number, required: true, default: 1 },
+  descripton: { type: String },
+});
+
 const approvalProcessSchema = new mongoose.Schema({
   processName: { type: String, required: true },
   steps: [stepSchema],
@@ -61,6 +70,7 @@ const proposalSchema = new mongoose.Schema({
     default: Date.now,
   },
   comments: [commentSchema],
+  proposalContent: [proposalContentSchema],
 });
 
 const ApprovalProcess = mongoose.model(

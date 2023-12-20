@@ -64,15 +64,47 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
     setUserInfo(res);
   };
 
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+
+    const reader = new FileReader();
+
+    // Xử lý sự kiện khi đọc file thành công
+    reader.onload = function (e) {
+      const base64String = e.target.result;
+      console.log("Base64:", base64String);
+
+      // Gọi hàm để tách nền (cần thư viện hoặc API phức tạp hơn)
+      // Ví dụ: removeBackground(base64String);
+    };
+
+    // Đọc file dưới dạng Data URL
+    reader.readAsDataURL(file);
+  };
+
   const onFinish = async (data) => {
     const formData = new FormData();
 
     if (image) {
       formData.append("image", image);
     }
+
     if (data.password) {
       formData.append("password", data.password);
     }
+
+    if (data.password) {
+      formData.append("password", data.password);
+    }
+
+    if (data.signatureImage) {
+      formData.append("signatureImage", data.signatureImage);
+    }
+
+    if (data.stampImage) {
+      formData.append("stampImage", data.stampImage);
+    }
+
     formData.append("fullName", data.fullName);
     formData.append("phoneNumber", data.phoneNumber);
 

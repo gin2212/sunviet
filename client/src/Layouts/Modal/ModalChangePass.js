@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   message,
   Input,
@@ -15,7 +15,7 @@ import {
 } from "antd";
 import { Col, Row } from "reactstrap";
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons";
-const { Option } = Select;
+import SignatureCanvas from "react-signature-canvas";
 
 export default function ModalChangePass({
   isModalChangePass,
@@ -31,6 +31,9 @@ export default function ModalChangePass({
   setImageEditUrl,
 }) {
   const [loading, setLoading] = useState(false);
+  const [stampImage, setStampImage] = useState("");
+  const [signatureImage, setSignatureImage] = useState("");
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     form.setFieldsValue({
@@ -41,6 +44,8 @@ export default function ModalChangePass({
     setImageEditUrl(
       `${process.env.REACT_APP_API_URL}images/${dataUser?.avatar}`
     );
+    setStampImage(dataUser?.stampImage);
+    setSignatureImage(dataUser?.signatureImage);
   }, [isModalChangePass]);
 
   const handleCancel = () => {
@@ -70,6 +75,21 @@ export default function ModalChangePass({
     return isJpgOrPng && isLt2M;
   };
 
+  const convertToBase64 = async (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (event) => {
+        resolve(event.target.result);
+      };
+
+      reader.onerror = (error) => {
+        reject(error);
+      };
+
+      reader.readAsDataURL(file);
+    });
+  };
   const handleChange = (info, isEdit = false) => {
     if (info.file.status === "uploading") {
       setLoading(false);
@@ -79,6 +99,40 @@ export default function ModalChangePass({
       });
       setImage(info.file.originFileObj);
     }
+  };
+
+  const handleChange1 = async (info, isEdit = false) => {
+    if (info.file.status === "uploading") {
+      setLoading(false);
+      getBase64(info.file.originFileObj, (url) => {
+        setLoading(false);
+        setStampImage(url);
+      });
+      setStampImage(info.file.originFileObj);
+      try {
+        const base64 = await convertToBase64(info.file.originFileObj);
+        console.log(base64);
+        form.setFieldsValue({
+          stampImage: base64,
+        });
+      } catch (error) {
+        console.error("Error converting to base64:", error);
+      }
+    }
+  };
+
+  const signatureRef = useRef();
+
+  const showSignatureModal = () => {
+    setVisible(true);
+  };
+
+  const handleSave = () => {
+    const signatureDataUrl = signatureRef.current.toDataURL();
+    setSignatureImage(signatureDataUrl);
+    form.setFieldsValue({
+      signatureImage: signatureDataUrl,
+    });
   };
 
   const uploadButton = (
@@ -94,6 +148,9 @@ export default function ModalChangePass({
     </div>
   );
 
+  const handleClear = () => {
+    signatureRef.current.clear();
+  };
   return (
     <div>
       <Modal
@@ -127,7 +184,37 @@ export default function ModalChangePass({
                 <Input name="id" />
               </Form.Item>
             </Col>
-
+            <Form.Item name="avatar" label="Ảnh đại diện" className="">
+              <Space align="start">
+                <Upload
+                  name="avatar"
+                  listType="picture-circle"
+                  className="avatar-uploader"
+                  showUploadList={false}
+                  fileList={[]}
+                  customRequest={(option) =>
+                    customUploadRequest(option, "avatar")
+                  }
+                  beforeUpload={beforeUpload}
+                  onChange={(e) => handleChange(e, true)}
+                >
+                  {imageEditUrl ? (
+                    <img
+                      src={imageEditUrl}
+                      alt="avatar"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: "50%",
+                        objectFit: "contain",
+                      }}
+                    />
+                  ) : (
+                    uploadButton
+                  )}
+                </Upload>
+              </Space>
+            </Form.Item>
             <Form.Item
               name="fullName"
               label="Tên người dùng"
@@ -174,24 +261,23 @@ export default function ModalChangePass({
                 allowClear={true}
               />
             </Form.Item>
-
-            <Form.Item name="avatar" label="Ảnh đại diện" className="">
+            <Form.Item name="stampImage" label="Con dấu">
               <Space align="start">
                 <Upload
-                  name="avatar"
-                  listType="picture-circle"
+                  name="stampImage"
                   className="avatar-uploader"
                   showUploadList={false}
+                  listType="picture-circle"
                   fileList={[]}
                   customRequest={(option) =>
                     customUploadRequest(option, "avatar")
                   }
                   beforeUpload={beforeUpload}
-                  onChange={(e) => handleChange(e, true)}
+                  onChange={(e) => handleChange1(e, true)}
                 >
-                  {imageEditUrl ? (
+                  {stampImage ? (
                     <img
-                      src={imageEditUrl}
+                      src={stampImage}
                       alt="avatar"
                       style={{
                         width: "100%",
@@ -205,6 +291,38 @@ export default function ModalChangePass({
                   )}
                 </Upload>
               </Space>
+            </Form.Item>
+            <Form.Item label="Chữ ký" name="signatureImage">
+              <SignatureCanvas
+                ref={signatureRef}
+                canvasProps={{
+                  width: 450,
+                  height: 200,
+                  className: "sigCanvas",
+                  style: {
+                    border: "1px solid #000",
+                  },
+                }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                }}
+              >
+                <Button key="save" type="primary" onClick={handleSave}>
+                  Lưu
+                </Button>
+                <Button key="clear" type="primary" danger onClick={handleClear}>
+                  Ký lại
+                </Button>
+              </div>
+              {signatureImage && (
+                <div>
+                  Chữ ký hiện tại
+                  <img src={signatureImage} alt="Chữ ký" />
+                </div>
+              )}
             </Form.Item>
           </Row>
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { SmileOutlined, UserOutlined } from "@ant-design/icons";
 import {
   Avatar,
   Button,
@@ -14,7 +13,7 @@ import {
   Select,
   Tag,
 } from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, SmileOutlined } from "@ant-design/icons";
 import { Col, Container, Row } from "reactstrap";
 import DataTable from "../common/DataTable";
 import {
@@ -310,6 +309,7 @@ const Approval_Process = () => {
       </Modal>
     );
   };
+
   return (
     <React.Fragment>
       <div className="page-content">

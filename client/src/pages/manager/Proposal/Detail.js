@@ -6,7 +6,6 @@ import moment from "moment";
 import { approve, reject, comment } from "../../../services/api";
 import { BiPrinter } from "react-icons/bi";
 import ReactToPrint from "react-to-print";
-import "./style.css";
 
 function Detail() {
   const { id } = useParams();
@@ -77,6 +76,9 @@ function Detail() {
 
   return (
     <div>
+      <div>
+        <ComponentToPrint ref={(el) => (componentRef = el)} info={proposal} />
+      </div>
       <div>
         <div
           style={{
@@ -342,235 +344,68 @@ class ComponentToPrint extends React.Component {
     const info = this.props.info;
     console.log(info);
     return (
-      <div class="app">
-        <header>
-          <div class="logo">
-            <img src="logo.png" alt="logo" />
+      <div style={{ padding: "10px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+          }}
+        >
+          <div
+            style={{
+              width: "60%",
+              height: "100%",
+            }}
+          >
+            {" "}
+            <img
+              src="/logo_print.png"
+              style={{
+                width: "100%",
+                height: "200px",
+              }}
+            />
           </div>
-          <div class="title">
-            <h1>giấy đề xuất</h1>
-            <p>
-              <i>Ngày 10 tháng 05 năm 2023</i>
-            </p>
-          </div>
-        </header>
-        <div class="project-name">
-          <i>
-            Dự án: Hạ tầng kỹ thuật khu dân cư xã Xuân Lai - Huyện Thọ Xuân -
-            Tỉnh Thanh Hóa
-          </i>
-        </div>
-        <div class="suggest">
-          <div class="suggest-name">
-            <h3>1. Người đề xuất:</h3>
-            <span>Đỗ Tiến Trường</span>
-            <span class="under-dot-first-child">
-              ..........................................................................
-            </span>
-          </div>
-          <div class="suggest-name">
-            <h3>Chức vụ:</h3>
-            <span>Đội XL số 01</span>
-            <span class="under-dot">
-              .....................................................
-            </span>
-          </div>
-        </div>
-        <div class="suggest-content">
-          <div class="suggest-content-name">
-            <h3>2. Nội dung đề xuất:</h3>
-            <span>Chi phí chung dự án</span>
-            <span class="suggest-content-under-dot">
-              .........................................................................................................................................................
-            </span>
+          <div
+            style={{
+              fontSize: "16px",
+              fontWeight: "bold",
+              textAlign: "center",
+              width: "30%",
+            }}
+          >
+            <p>GIẤY ĐỀ XUẤT</p>
+            <p>Ngày 10 tháng 05 năm 2023.</p>
           </div>
         </div>
-        <table border="1">
-          <thead>
-            <th>stt</th>
-            <th>nội dung</th>
-            <th>đv</th>
-            <th>k. lượng</th>
-            <th>đ. giá</th>
-            <th>t. tiền</th>
-            <th>ghi chú</th>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>Tạm ứng chi phí chung MB Xuân Lai</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>20000000</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Tạm ứng chi phí chung MB Xuân Lai</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>20000000</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Tạm ứng chi phí chung MB Xuân Lai</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>20000000</td>
-              <td></td>
-              <tr>
-                <td>1</td>
-                <td>Tạm ứng chi phí chung MB Xuân Lai</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>20000000</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Tạm ứng chi phí chung MB Xuân Lai</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>20000000</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>Tạm ứng chi phí chung MB Xuân Lai</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>20000000</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>1</td>
-                <td>Tạm ứng chi phí chung MB Xuân Lai</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>20000000</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Tạm ứng chi phí chung MB Xuân Lai</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>20000000</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>Tạm ứng chi phí chung MB Xuân Lai</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>20000000</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>1</td>
-                <td>Tạm ứng chi phí chung MB Xuân Lai</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>20000000</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Tạm ứng chi phí chung MB Xuân Lai</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>20000000</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>Tạm ứng chi phí chung MB Xuân Lai</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>20000000</td>
-                <td></td>
-              </tr>
-            </tr>
-          </tbody>
-          <thead>
-            <th></th>
-            <th>cộng:</th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th>60000000</th>
-            <th></th>
-          </thead>
-        </table>
-        <div class="proposer">
-          <div class="proposer-title">
-            <span>Người đề xuất Ký:</span>
-          </div>
-          <div class="full-name">
-            <span> Họ và tên: </span>
-          </div>
+
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          Dự án: {info?.project?.projectName}
         </div>
-        <div class="opinion-proposer">
-          <h4 class="">3. Ý kiến đề nghị của người phụ trách</h4>
-          <span>
-            <i>(Người phụ trách là CHT hoặc TP Đồng ý hay không đồng ý).</i>
-          </span>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "start",
+            alignItems: "center",
+            gap: "100px",
+          }}
+        >
+          <b>1. Người đề xuất:</b>
+          <p>{info?.createdBy?.fullName}</p>
+          <p>Chức vụ: {info?.createdBy?.role?.roleName}</p>
+          <p>{info?.createdBy?.deparment?.departmentName}</p>
         </div>
-        <div class="opinion-proposer-content">
-          <span>
-            ...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
-          </span>
-          <span></span>
-          <div class="proposer">
-            <p class="proposer-title">Ký</p>
-            <p class="proposer-title">Họ và tên:</p>
-          </div>
-        </div>
-        <div class="opinion-proposer">
-          <h4 class="">4. Ý kiến đề nghị của kế toán</h4>
-          <span>
-            <i>
-              {" "}
-              ( Yêu cầu về hóa đơn, chứng từ, báo giá, HĐ ghi cho đvị nào).
-            </i>
-          </span>
-        </div>
-        <div class="opinion-proposer-content">
-          <span>
-            ...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
-          </span>
-          <span></span>
-          <div class="proposer">
-            <p class="proposer-title">Ký</p>
-            <p class="proposer-title">Họ và tên:</p>
-          </div>
-        </div>
-        <div class="done">
-          <div>
-            <div>
-              <h3>giám đốc duyệt</h3>
-              <div class="signature">
-                <img src="signature.png" alt="signature" />
-              </div>
-              <div class="signature-footer">
-                <p>Nguyễn Văn A</p>
-                <p>Ký ngày: 11/09/2023</p>
-              </div>
-            </div>
-          </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "start",
+            alignItems: "center",
+            gap: "100px",
+          }}
+        >
+          <b>2. Nội dung đề xuất:</b>
+          <p>{info?.content}</p>
         </div>
       </div>
     );

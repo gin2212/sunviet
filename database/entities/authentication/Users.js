@@ -18,6 +18,7 @@ let userSchema = new Schema(
       type: String,
       default: "unknown",
     },
+
     avatar: {
       type: String,
     },
@@ -36,6 +37,8 @@ let userSchema = new Schema(
       type: Number,
     },
     department: { type: Schema.Types.ObjectId, ref: "Departments" },
+    signatureImage: { type: String },
+    stampImage: { type: String },
   },
   { versionKey: false }
 );

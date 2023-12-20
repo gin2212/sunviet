@@ -6,6 +6,7 @@ const Users = require("../database/entities/authentication/Users");
 const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
 const nodemailer = require("nodemailer");
+const { json } = require("body-parser");
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -47,6 +48,7 @@ async function createProposal(req, res) {
       category: req.body.category,
       selectedApprovalProcess: clonedApprovalProcess._id,
       content: req.body.content,
+      proposalContent: JSON.parse(req.body.proposalContent),
     });
 
     await proposal.save();
@@ -106,7 +108,21 @@ async function getAllProposals(req, res) {
 async function getProposalById(req, res) {
   try {
     let proposal = await Proposal.findById(req.params.id)
-      .populate("createdBy")
+      .populate({
+        path: "createdBy",
+        populate: {
+          path: "role",
+          model: "Roles",
+        },
+      })
+      .populate({
+        path: "createdBy",
+
+        populate: {
+          path: "department",
+          model: "Departments",
+        },
+      })
       .populate("project")
       .populate({
         path: "selectedApprovalProcess",

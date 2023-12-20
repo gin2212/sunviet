@@ -13,21 +13,17 @@ import {
   Select,
   Tag,
   Table,
+  Typography,
+  InputNumber,
 } from "antd";
+import { EyeOutlined, InboxOutlined, SmileOutlined } from "@ant-design/icons";
 import {
-  EyeOutlined,
-  InboxOutlined,
-  FolderViewOutlined,
-} from "@ant-design/icons";
-import {
-  getPagingProposal,
   getAllProposals,
   createProposal,
   getAllProject,
   getAllApprovalProcess,
 } from "../../../services/api";
 import moment from "moment";
-import DataTable from "../../common/DataTable";
 import SignatureCanvas from "react-signature-canvas";
 import { useNavigate } from "react-router-dom";
 
@@ -36,16 +32,12 @@ const { Option } = Select;
 
 const Proposal = () => {
   document.title = "Quản lý đề xuất";
-
   const [form] = Form.useForm();
   const [formSearch] = Form.useForm();
   const navigate = useNavigate();
   const [listRole, setListRole] = useState([]);
   const [visibleForm, setVisibleForm] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("");
-  const [totalPage, setTotalPage] = useState(1);
-  const [indexPage, setPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading] = useState(true);
   const [signatureDataUrl, setSignatureDataUrl] = useState(null);
   const [visible, setVisible] = useState(false);
@@ -55,6 +47,7 @@ const Proposal = () => {
   const [contentData, setContentData] = useState("");
   const [type, setType] = useState(1);
   const dataStorage = JSON.parse(localStorage.getItem("data"));
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -85,6 +78,13 @@ const Proposal = () => {
     setVisible(false);
   };
 
+  const showUserModal = () => {
+    setOpen(true);
+  };
+  const hideUserModal = () => {
+    setOpen(false);
+  };
+
   const handleCancel = () => {
     setVisible(false);
   };
@@ -106,7 +106,6 @@ const Proposal = () => {
       return dataRes ? data : false;
     } catch (error) {
       message.error("Lấy danh sách đề xuất thất bại!");
-      setTotalPage(0);
       return [];
     }
   };
@@ -224,6 +223,7 @@ const Proposal = () => {
     formData.append("project", data.project);
     formData.append("content", contentData);
     formData.append("approvalProcessId", data.selectedApprovalProcess);
+    formData.append("proposalContent", JSON.stringify(data.proposalContent));
 
     if (!data.id) {
       //Save
@@ -320,7 +320,6 @@ const Proposal = () => {
     }
 
     setListRole(listConver);
-    setPageIndex(1);
     setContentData("");
     form.resetFields();
     formSearch.resetFields();
@@ -521,6 +520,107 @@ const Proposal = () => {
     setListRole(listConver);
   };
 
+  // reset form fields when modal is form, closed
+  const useResetFormOnCloseModal = ({ form, open }) => {
+    const prevOpenRef = useRef();
+    useEffect(() => {
+      prevOpenRef.current = open;
+    }, [open]);
+    const prevOpen = prevOpenRef.current;
+    useEffect(() => {
+      if (!open && prevOpen) {
+        form.resetFields();
+      }
+    }, [form, prevOpen, open]);
+  };
+  const ModalForm = ({ open, onCancel }) => {
+    const [form] = Form.useForm();
+    useResetFormOnCloseModal({
+      form,
+      open,
+    });
+    const onOk = () => {
+      form.submit();
+    };
+    return (
+      <Modal
+        title="Thêm nội dung đề xuất"
+        open={open}
+        onOk={onOk}
+        onCancel={onCancel}
+      >
+        <Form form={form} layout="vertical" name="proposalContentForm">
+          <Form.Item
+            name="content"
+            label="Nội dung"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập nội dung",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="agency"
+            label="Đơn vị"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập đơn vị",
+              },
+            ]}
+          >
+            <InputNumber style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item
+            name="mass"
+            label="Khối lượng"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập khối lượng",
+              },
+            ]}
+          >
+            <InputNumber style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item
+            name="unitPrice"
+            label="Đơn giá"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập đơn giá",
+              },
+            ]}
+          >
+            <InputNumber style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item
+            name="totalCost"
+            label="Thành tiền"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập thành tiền",
+              },
+            ]}
+          >
+            <InputNumber style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item name="descripton" label="Ghi chú">
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+    );
+  };
+
+  const handleClear = () => {
+    signatureRef.current.clear();
+  };
   return (
     <React.Fragment>
       <div className="page-content">
@@ -533,8 +633,8 @@ const Proposal = () => {
             <Button key="save" type="primary" onClick={handleSave}>
               Lưu
             </Button>,
-            <Button key="confirm" type="primary" onClick={handleSave}>
-              Xác nhận
+            <Button key="clear" type="primary" danger onClick={handleClear}>
+              Ký lại
             </Button>,
             <Button key="cancel" onClick={handleCancel}>
               Đóng
@@ -606,179 +706,240 @@ const Proposal = () => {
                 }}
                 style={{ marginTop: "70px" }}
               >
-                <Form
-                  form={form}
-                  layout="vertical"
-                  onFinish={onFinish}
-                  autoComplete="off"
+                <Form.Provider
+                  onFormFinish={(name, { values, forms }) => {
+                    if (name === "proposalContentForm") {
+                      const { basicForm } = forms;
+                      const proposalContent =
+                        basicForm.getFieldValue("proposalContent") || [];
+                      basicForm.setFieldsValue({
+                        proposalContent: [...proposalContent, values],
+                      });
+                      setOpen(false);
+                    }
+                  }}
                 >
-                  <Row>
-                    <Col hidden={true}>
-                      <Form.Item name="id" label="Id">
-                        <Input name="id" />
+                  <Form
+                    name="basicForm"
+                    form={form}
+                    layout="vertical"
+                    onFinish={onFinish}
+                    autoComplete="off"
+                  >
+                    <Row>
+                      <Col hidden={true}>
+                        <Form.Item name="id" label="Id">
+                          <Input name="id" />
+                        </Form.Item>
+                      </Col>
+                      <Form.Item
+                        name="title"
+                        label="Tên đề xuất"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng nhập tên đề xuất!",
+                          },
+                          {
+                            type: "roleName",
+                          },
+                          {
+                            type: "string",
+                            min: 1,
+                          },
+                        ]}
+                      >
+                        <Input
+                          placeholder="Nhập tên đề xuất..."
+                          name="roleName"
+                          allowClear={true}
+                        />
                       </Form.Item>
-                    </Col>
-                    <Form.Item
-                      name="title"
-                      label="Tên đề xuất"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Vui lòng nhập tên đề xuất!",
-                        },
-                        {
-                          type: "roleName",
-                        },
-                        {
-                          type: "string",
-                          min: 1,
-                        },
-                      ]}
-                    >
-                      <Input
-                        placeholder="Nhập tên đề xuất..."
-                        name="roleName"
-                        allowClear={true}
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      name="category"
-                      label="Danh mục"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Vui lòng nhập danh mục!",
-                        },
-                        {
-                          type: "roleName",
-                        },
-                        {
-                          type: "string",
-                          min: 1,
-                        },
-                      ]}
-                    >
-                      <Input
-                        placeholder="Nhập danh mục..."
-                        name="roleName"
-                        allowClear={true}
-                      />
-                    </Form.Item>
+                      <Form.Item
+                        name="category"
+                        label="Danh mục"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng nhập danh mục!",
+                          },
+                          {
+                            type: "roleName",
+                          },
+                          {
+                            type: "string",
+                            min: 1,
+                          },
+                        ]}
+                      >
+                        <Input
+                          placeholder="Nhập danh mục..."
+                          name="roleName"
+                          allowClear={true}
+                        />
+                      </Form.Item>
 
-                    <Form.Item
-                      rules={[
-                        {
-                          required: true,
-                          message: "Vui lòng chọn dự án!",
-                        },
-                        {
-                          type: "string",
-                          min: 1,
-                        },
-                      ]}
-                      name="project"
-                      label="Dự án"
-                    >
-                      <Select
-                        placeholder="Chọn một dự án..."
-                        allowClear
-                        showSearch
+                      <Form.Item
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng chọn dự án!",
+                          },
+                          {
+                            type: "string",
+                            min: 1,
+                          },
+                        ]}
                         name="project"
+                        label="Dự án"
                       >
-                        {project?.length > 0 &&
-                          project?.map((item) => {
-                            return (
-                              <Option key={item._id} value={item._id}>
-                                {item.projectName}
-                              </Option>
-                            );
-                          })}
-                      </Select>
-                    </Form.Item>
+                        <Select
+                          placeholder="Chọn một dự án..."
+                          allowClear
+                          showSearch
+                          name="project"
+                        >
+                          {project?.length > 0 &&
+                            project?.map((item) => {
+                              return (
+                                <Option key={item._id} value={item._id}>
+                                  {item.projectName}
+                                </Option>
+                              );
+                            })}
+                        </Select>
+                      </Form.Item>
 
-                    <Form.Item
-                      rules={[
-                        {
-                          required: true,
-                          message: "Vui lòng chọn quy trình duyệt!",
-                        },
-                        {
-                          type: "string",
-                          min: 1,
-                        },
-                      ]}
-                      name="selectedApprovalProcess"
-                      label="Quy trình duyệt"
-                    >
-                      <Select
-                        placeholder="Chọn một quy trình duyệt..."
-                        allowClear
-                        showSearch
+                      <Form.Item
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng chọn quy trình duyệt!",
+                          },
+                          {
+                            type: "string",
+                            min: 1,
+                          },
+                        ]}
                         name="selectedApprovalProcess"
+                        label="Quy trình duyệt"
                       >
-                        {approvalProcess?.length > 0 &&
-                          approvalProcess?.map((item) => {
-                            return (
-                              <Option key={item._id} value={item._id}>
-                                {item.processName}
-                              </Option>
-                            );
-                          })}
-                      </Select>
-                    </Form.Item>
-                    <div className="ant-col ant-form-item-label">
-                      <label
-                        htmlFor="content"
-                        className="ant-form-item-required"
-                        title="Post Content"
+                        <Select
+                          placeholder="Chọn một quy trình duyệt..."
+                          allowClear
+                          showSearch
+                          name="selectedApprovalProcess"
+                        >
+                          {approvalProcess?.length > 0 &&
+                            approvalProcess?.map((item) => {
+                              return (
+                                <Option key={item._id} value={item._id}>
+                                  {item.processName}
+                                </Option>
+                              );
+                            })}
+                        </Select>
+                      </Form.Item>
+                      <div className="ant-col ant-form-item-label">
+                        <label
+                          htmlFor="content"
+                          className="ant-form-item-required"
+                          title="Post Content"
+                        >
+                          Nội dung trích yếu
+                        </label>
+                      </div>
+                      <textarea
+                        value={contentData}
+                        onChange={(e) => setContentData(e.target.value)}
+                        className="form-control"
+                        id="Input3"
+                        rows="5"
+                      ></textarea>
+                      <Form.Item name="file" label="Tài liệu">
+                        <Dragger name="file" customRequest={customRequest}>
+                          <p className="ant-upload-drag-icon">
+                            <InboxOutlined />
+                          </p>
+                          <p className="ant-upload-text">
+                            Bấm hoặc thả file vào
+                          </p>
+                        </Dragger>
+                      </Form.Item>
+                      <Form.Item name="proposalContent" hidden />
+                      <Form.Item
+                        label="Nội dung đề xuất"
+                        shouldUpdate={(prevValues, curValues) =>
+                          prevValues.users !== curValues.users
+                        }
                       >
-                        Nội dung trích yếu
-                      </label>
-                    </div>
-                    <textarea
-                      value={contentData}
-                      onChange={(e) => setContentData(e.target.value)}
-                      className="form-control"
-                      id="Input3"
-                      rows="5"
-                    ></textarea>
-                    <Form.Item name="file" label="Tài liệu">
-                      <Dragger name="file" customRequest={customRequest}>
-                        <p className="ant-upload-drag-icon">
-                          <InboxOutlined />
-                        </p>
-                        <p className="ant-upload-text">Bấm hoặc thả file vào</p>
-                      </Dragger>
+                        {({ getFieldValue }) => {
+                          const proposalContent =
+                            getFieldValue("proposalContent") || [];
+                          return proposalContent.length ? (
+                            <>
+                              <ul>
+                                {proposalContent.map((proposal, index) => (
+                                  <li key={index} className="proposalContent">
+                                    {`${index + 1} - ${proposal?.content} - ${
+                                      proposal?.agency
+                                    } - ${proposal?.mass} - ${
+                                      proposal?.unitPrice
+                                    } - ${proposal?.totalCost} - ${
+                                      proposal?.descripton
+                                    }`}
+                                  </li>
+                                ))}
+                              </ul>
+                              <Button htmlType="button" onClick={showUserModal}>
+                                Thêm nội dung
+                              </Button>
+                            </>
+                          ) : (
+                            <div>
+                              <Typography.Text
+                                className="ant-form-text"
+                                type="secondary"
+                              >
+                                ( <SmileOutlined /> Chưa có nội dung )
+                              </Typography.Text>
+                              <Button htmlType="button" onClick={showUserModal}>
+                                Thêm nội dung
+                              </Button>
+                            </div>
+                          );
+                        }}
+                      </Form.Item>
+
+                      <Form.Item label="Chữ ký">
+                        {signatureDataUrl && (
+                          <div>
+                            <img src={signatureDataUrl} alt="Chữ ký" />
+                          </div>
+                        )}
+                        <Button type="primary" onClick={showSignatureModal}>
+                          Ký tên
+                        </Button>
+                      </Form.Item>
+                    </Row>
+                    <Form.Item className="mt-3">
+                      <Space>
+                        <Button type="primary" htmlType="submit">
+                          Lưu
+                        </Button>
+
+                        <Button
+                          type="primary"
+                          danger
+                          onClick={handleCloseDrawer}
+                        >
+                          Đóng
+                        </Button>
+                      </Space>
                     </Form.Item>
-                    <Form.Item label="Chữ ký">
-                      {signatureDataUrl && (
-                        <div>
-                          <img src={signatureDataUrl} alt="Chữ ký" />
-                        </div>
-                      )}
-                      <Button type="primary" onClick={showSignatureModal}>
-                        Ký tên
-                      </Button>
-                    </Form.Item>
-                  </Row>
-                  <Form.Item className="mt-3">
-                    <Space>
-                      <Button type="primary" htmlType="submit">
-                        Lưu
-                      </Button>
-                      <Button
-                        type="primary"
-                        htmlType="button"
-                        onClick={() => handleRefreshCreate()}
-                      >
-                        Làm mới trang
-                      </Button>
-                      <Button type="danger" onClick={handleCloseDrawer}>
-                        Đóng
-                      </Button>
-                    </Space>
-                  </Form.Item>
-                </Form>
+                  </Form>
+                  <ModalForm open={open} onCancel={hideUserModal} />
+                </Form.Provider>
               </Drawer>
             </Col>
           </div>
