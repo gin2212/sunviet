@@ -23,6 +23,10 @@ import moment from "moment";
 
 const { Header } = Layout;
 
+const accessToken = localStorage.getItem("accessToken")
+  ? localStorage.getItem("accessToken")
+  : null;
+
 const HeaderMain = ({ collapsed, setCollapsed }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -35,9 +39,11 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    handleInfoUser();
-    fetchData();
-  }, []);
+    if (accessToken) {
+      handleInfoUser();
+      fetchData();
+    }
+  }, [accessToken]);
 
   const fetchData = async () => {
     const res = await getNotify();
@@ -64,24 +70,6 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
     setUserInfo(res);
   };
 
-  const handleFileSelect = (event) => {
-    const file = event.target.files[0];
-
-    const reader = new FileReader();
-
-    // Xử lý sự kiện khi đọc file thành công
-    reader.onload = function (e) {
-      const base64String = e.target.result;
-      console.log("Base64:", base64String);
-
-      // Gọi hàm để tách nền (cần thư viện hoặc API phức tạp hơn)
-      // Ví dụ: removeBackground(base64String);
-    };
-
-    // Đọc file dưới dạng Data URL
-    reader.readAsDataURL(file);
-  };
-
   const onFinish = async (data) => {
     const formData = new FormData();
 
@@ -89,27 +77,23 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
       formData.append("image", image);
     }
 
-    if (data.password) {
+    if (data?.password) {
       formData.append("password", data.password);
     }
 
-    if (data.password) {
-      formData.append("password", data.password);
-    }
-
-    if (data.signatureImage) {
+    if (data?.signatureImage) {
       formData.append("signatureImage", data.signatureImage);
     }
 
-    if (data.stampImage) {
+    if (data?.stampImage) {
       formData.append("stampImage", data.stampImage);
     }
 
-    formData.append("fullName", data.fullName);
-    formData.append("phoneNumber", data.phoneNumber);
+    formData.append("fullName", data?.fullName);
+    formData.append("phoneNumber", data?.phoneNumber);
 
     try {
-      await updateUser(data.id, formData);
+      await updateUser(data?.id, formData);
       message.success("Cập nhật thôn tin thành công!");
       setIsModalChangePass(false);
       form.resetFields();
@@ -138,7 +122,7 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
       {listNoti?.length > 0 ? (
         listNoti?.map((item, index) => (
           <Menu.Item key={index} onClick={() => handleRead(item)}>
-            <p> {item.message}</p>
+            <p> {item?.message}</p>
             <p> {moment(item?.createdAt).format("HH:mm DD/MM/YYYY")}</p>
           </Menu.Item>
         ))

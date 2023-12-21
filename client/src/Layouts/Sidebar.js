@@ -59,6 +59,11 @@ const listMenu = [
     label: "Quyền hạn",
   },
 ];
+
+const accessToken = localStorage.getItem("accessToken")
+  ? localStorage.getItem("accessToken")
+  : null;
+
 const Sidebar = ({ collapsed }) => {
   const navigate = useNavigate();
   const [listAction, setListAction] = useState();
@@ -70,13 +75,16 @@ const Sidebar = ({ collapsed }) => {
   useEffect(() => {
     const fetchData = async () => {
       const actions = await getMyAction();
-      setListAction(actions.data);
+      setListAction(actions?.data);
     };
-    fetchData();
-  }, []);
+
+    if (accessToken) {
+      fetchData();
+    }
+  }, [accessToken]);
 
   const generateMenu = (listMenu, handlePage, currentPath) => {
-    return listMenu.map((menuItem) => {
+    return listMenu?.map((menuItem) => {
       const { key, item, label } = menuItem;
 
       if (!listAction?.includes(key) && key !== "home") {

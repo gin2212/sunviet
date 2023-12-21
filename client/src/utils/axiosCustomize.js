@@ -21,9 +21,9 @@ axios.interceptors.response.use(
     console.log(error.response);
     console.warn("Error status", error.response);
     if (error.response) {
-      if (error.response.status === 500) {
+      if (error.response.status === 500 && token) {
         history.push("/error-server");
-      } else if (error.response.status === 403) {
+      } else if (error.response.status === 403 && token) {
         history.push("/error-403");
       } else {
         message.error("Đã có lỗi xảy ra vui lòng thử lại sau !");

@@ -33,7 +33,6 @@ export default function ModalChangePass({
   const [loading, setLoading] = useState(false);
   const [stampImage, setStampImage] = useState("");
   const [signatureImage, setSignatureImage] = useState("");
-  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     form.setFieldsValue({
@@ -90,6 +89,7 @@ export default function ModalChangePass({
       reader.readAsDataURL(file);
     });
   };
+
   const handleChange = (info, isEdit = false) => {
     if (info.file.status === "uploading") {
       setLoading(false);
@@ -101,7 +101,7 @@ export default function ModalChangePass({
     }
   };
 
-  const handleChange1 = async (info, isEdit = false) => {
+  const handleChange1 = async (info) => {
     if (info.file.status === "uploading") {
       setLoading(false);
       getBase64(info.file.originFileObj, (url) => {
@@ -122,10 +122,6 @@ export default function ModalChangePass({
   };
 
   const signatureRef = useRef();
-
-  const showSignatureModal = () => {
-    setVisible(true);
-  };
 
   const handleSave = () => {
     const signatureDataUrl = signatureRef.current.toDataURL();
