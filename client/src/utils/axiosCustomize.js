@@ -6,12 +6,10 @@ import history from "./history";
 axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
-const urlRefreshToken = "/api/auth/refresh";
 const token = localStorage.getItem("accessToken")
   ? localStorage.getItem("accessToken")
   : null;
 if (token) axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-const apiClient = axios.create();
 
 axios.interceptors.response.use(
   (response) => {
@@ -25,8 +23,6 @@ axios.interceptors.response.use(
         history.push("/error-server");
       } else if (error.response.status === 403 && token) {
         history.push("/error-403");
-      } else {
-        message.error("Đã có lỗi xảy ra vui lòng thử lại sau !");
       }
     } else {
       return Promise.reject(error);

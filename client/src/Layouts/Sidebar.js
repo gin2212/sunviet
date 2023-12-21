@@ -60,10 +60,6 @@ const listMenu = [
   },
 ];
 
-const accessToken = localStorage.getItem("accessToken")
-  ? localStorage.getItem("accessToken")
-  : null;
-
 const Sidebar = ({ collapsed }) => {
   const navigate = useNavigate();
   const [listAction, setListAction] = useState();
@@ -78,10 +74,8 @@ const Sidebar = ({ collapsed }) => {
       setListAction(actions?.data);
     };
 
-    if (accessToken) {
-      fetchData();
-    }
-  }, [accessToken]);
+    fetchData();
+  }, []);
 
   const generateMenu = (listMenu, handlePage, currentPath) => {
     return listMenu?.map((menuItem) => {

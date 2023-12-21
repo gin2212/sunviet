@@ -23,10 +23,6 @@ import moment from "moment";
 
 const { Header } = Layout;
 
-const accessToken = localStorage.getItem("accessToken")
-  ? localStorage.getItem("accessToken")
-  : null;
-
 const HeaderMain = ({ collapsed, setCollapsed }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -39,11 +35,9 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    if (accessToken) {
-      handleInfoUser();
-      fetchData();
-    }
-  }, [accessToken]);
+    handleInfoUser();
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
     const res = await getNotify();

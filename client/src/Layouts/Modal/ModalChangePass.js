@@ -5,12 +5,8 @@ import {
   Button,
   Form,
   Space,
-  Select,
-  Tooltip,
-  Drawer,
   Upload,
   Modal,
-  Image,
   Divider,
 } from "antd";
 import { Col, Row } from "reactstrap";
