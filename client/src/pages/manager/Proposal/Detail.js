@@ -149,10 +149,10 @@ function Detail() {
             <section className="modal-info">
               <span style={{ width: "20%" }}>Người duyệt:</span>
               {proposal?.selectedApprovalProcess?.steps[
-                proposal?.selectedApprovalProcess?.steps.length - 1
+                proposal?.selectedApprovalProcess?.steps?.length - 1
               ] === "Approved" &&
                 proposal?.selectedApprovalProcess?.steps[
-                  proposal?.selectedApprovalProcess?.steps.length - 1
+                  proposal?.selectedApprovalProcess?.steps?.length - 1
                 ]?.approvers?.user?.fullName}
             </section>
             <section className="modal-info">
@@ -160,27 +160,27 @@ function Detail() {
               <Tag
                 color={
                   proposal?.selectedApprovalProcess?.steps[
-                    proposal?.selectedApprovalProcess?.steps.length - 1
+                    proposal?.selectedApprovalProcess?.steps?.length - 1
                   ]?.approvers?.status === "Approved"
                     ? "green"
                     : proposal?.selectedApprovalProcess?.steps[
-                        proposal?.selectedApprovalProcess?.steps.length - 1
+                        proposal?.selectedApprovalProcess?.steps?.length - 1
                       ]?.approvers?.status === "Pending"
                     ? "orange"
                     : "red"
                 }
                 key={
                   proposal?.selectedApprovalProcess?.steps[
-                    proposal?.selectedApprovalProcess?.steps.length - 1
+                    proposal?.selectedApprovalProcess?.steps?.length - 1
                   ]?.approvers?.status
                 }
               >
                 {proposal?.selectedApprovalProcess?.steps[
-                  proposal?.selectedApprovalProcess?.steps.length - 1
+                  proposal?.selectedApprovalProcess?.steps?.length - 1
                 ]?.approvers?.status === "Approved"
                   ? "Đã duyệt"
                   : proposal?.selectedApprovalProcess?.steps[
-                      proposal?.selectedApprovalProcess?.steps.length - 1
+                      proposal?.selectedApprovalProcess?.steps?.length - 1
                     ]?.approvers?.status === "Pending"
                   ? "Chờ duyệt"
                   : "Đã từ chối"}
@@ -701,7 +701,7 @@ class ComponentToPrint extends React.Component {
                 ...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
               </span>
               <span className="opinion-proposer-content-last-child">
-                {info?.comments[info?.comments.length - 2]?.content}
+                {info?.comments[info?.comments?.length - 4]?.content}
               </span>
               <div
                 className="proposer"
@@ -719,7 +719,7 @@ class ComponentToPrint extends React.Component {
                   <img
                     style={{ width: "150px" }}
                     src={
-                      info?.comments[info?.comments.length - 2]?.user
+                      info?.comments[info?.comments?.length - 2]?.user
                         ?.signatureImage
                     }
                     alt=""
@@ -728,7 +728,7 @@ class ComponentToPrint extends React.Component {
                 <p className="proposer-title">
                   <span style={{ marginRight: "10px" }}>Họ và tên:</span>
                   <span>
-                    {info?.comments[info?.comments.length - 2]?.user?.fullName}
+                    {info?.comments[info?.comments?.length - 2]?.user?.fullName}
                   </span>
                 </p>
               </div>
@@ -746,7 +746,7 @@ class ComponentToPrint extends React.Component {
                 ...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
               </span>
               <span className="opinion-proposer-content-last-child">
-                {info?.comments[info?.comments.length - 1]?.content}
+                {info?.comments[info?.comments?.length - 3]?.content}
               </span>
               <div
                 className="proposer"
@@ -764,7 +764,7 @@ class ComponentToPrint extends React.Component {
                   <img
                     style={{ width: "150px" }}
                     src={
-                      info?.comments[info?.comments.length - 1]?.user
+                      info?.comments[info?.comments?.length - 1]?.user
                         ?.signatureImage
                     }
                     alt=""
@@ -773,7 +773,94 @@ class ComponentToPrint extends React.Component {
                 <p className="proposer-title">
                   <span style={{ marginRight: "10px" }}>Họ và tên:</span>
                   <span>
-                    {info?.comments[info?.comments.length - 1]?.user?.fullName}
+                    {info?.comments[info?.comments?.length - 1]?.user?.fullName}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className="opinion-proposer">
+              <h4 className="">5. Ý kiến của Ban kiểm soát - Phó Giám Đốc</h4>
+              <span>
+                <i>
+                  ( Yêu cầu về hóa đơn, chứng từ, báo giá, HĐ ghi cho đvị nào).
+                </i>
+              </span>
+            </div>
+            <div className="opinion-proposer-content">
+              <span className="opinion-proposer-content-first-child">
+                ...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+              </span>
+              <span className="opinion-proposer-content-last-child">
+                {info?.comments[info?.comments?.length - 2]?.content}
+              </span>
+              <div
+                className="proposer"
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                <p
+                  className="proposer-title"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginRight: "20px",
+                  }}
+                >
+                  <span>Ký</span>
+                  <img
+                    style={{ width: "150px" }}
+                    src={
+                      info?.comments[info?.comments?.length - 1]?.user
+                        ?.signatureImage
+                    }
+                    alt=""
+                  />
+                </p>
+                <p className="proposer-title">
+                  <span style={{ marginRight: "10px" }}>Họ và tên:</span>
+                  <span>
+                    {info?.comments[info?.comments?.length - 1]?.user?.fullName}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className="opinion-proposer">
+              <h4 className="">6. Ý kiến của Giám Đốc</h4>
+            </div>
+            <div className="opinion-proposer-content">
+              <span className="opinion-proposer-content-first-child">
+                ...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+              </span>
+              <span className="opinion-proposer-content-last-child">
+                {info?.comments[info?.comments?.length - 1]?.content}
+              </span>
+              <div
+                className="proposer"
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                <p
+                  className="proposer-title"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginRight: "20px",
+                  }}
+                >
+                  <span>Ký</span>
+                  <img
+                    style={{ width: "150px" }}
+                    src={
+                      info?.comments[info?.comments?.length - 1]?.user
+                        ?.signatureImage
+                    }
+                    alt=""
+                  />
+                </p>
+                <p className="proposer-title">
+                  <span style={{ marginRight: "10px" }}>Họ và tên:</span>
+                  <span>
+                    {info?.comments[info?.comments?.length - 1]?.user?.fullName}
                   </span>
                 </p>
               </div>
@@ -782,7 +869,17 @@ class ComponentToPrint extends React.Component {
               <div>
                 <div>
                   <h3>giám đốc duyệt</h3>
+
                   <div className="signature">
+                    <img
+                      src={
+                        info?.selectedApprovalProcess?.steps[
+                          info?.selectedApprovalProcess?.steps?.length - 1
+                        ]?.approvers?.user?.stampImage
+                      }
+                      alt="stampImage"
+                    />
+
                     <img
                       src={
                         info?.selectedApprovalProcess?.steps[
