@@ -114,6 +114,10 @@ async function getPagingDocuments(req, res) {
       searchObj.title = { $regex: `.*${req.query.search}.*`, $options: "i" };
     }
 
+    if (req.query.department) {
+      searchObj.department = req.query.department;
+    }
+
     const documents = await Documents.find(searchObj)
       .skip(pageSize * pageIndex - pageSize)
       .limit(parseInt(pageSize))

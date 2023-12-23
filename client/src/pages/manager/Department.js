@@ -31,6 +31,7 @@ function Department() {
   const [drawerTitle, setDrawerTitle] = useState();
   const [visibleForm, setVisibleForm] = useState(false);
   const [descriptionData, setDescriptionData] = useState("");
+  const dataStorage = JSON.parse(localStorage.getItem("data"));
 
   useEffect(() => {
     fetchData();

@@ -68,6 +68,12 @@ router.get(
   proposalController.getPagingProposals
 );
 
+router.put(
+  "/changeStatus/:id",
+  middlewares.authorize,
+  proposalController.changeStatus
+);
+
 // Endpoints cho việc duyệt, từ chối và thêm bình luận
 router.post(
   "/approve/:proposalId",

@@ -50,6 +50,7 @@ function Document() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState();
   const [previewTitle, setPreviewTitle] = useState("");
+  const dataStorage = JSON.parse(localStorage.getItem("data"));
 
   useEffect(() => {
     fetchData();
@@ -68,12 +69,17 @@ function Document() {
   const getDataDocument = async (_prams) => {
     setLoading(true);
     try {
+      _prams &&
+        dataStorage?.role?.roleName === "Nhân viên" &&
+        (_prams.Department = dataStorage?.department);
+      console.log(_prams);
       const params = _prams
         ? _prams
         : {
             page: 1,
             limit: 10,
             search: "",
+            department: dataStorage?.department,
           };
 
       const res = await getPagingDocument(params);

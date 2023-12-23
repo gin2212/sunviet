@@ -16,12 +16,18 @@ import {
   Typography,
   InputNumber,
 } from "antd";
-import { EyeOutlined, InboxOutlined, SmileOutlined } from "@ant-design/icons";
+import {
+  EyeOutlined,
+  InboxOutlined,
+  SmileOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import {
   getAllProposals,
   createProposal,
   getAllProject,
   getAllApprovalProcess,
+  deleteProposal,
 } from "../../../services/api";
 import moment from "moment";
 import SignatureCanvas from "react-signature-canvas";
@@ -134,8 +140,9 @@ const Proposal = () => {
   const fetchData = async () => {
     const resListRole = await getAllData();
     let listConver;
-
-    if (type === 1) {
+    if (dataStorage?.role?.roleName === "admin") {
+      listConver = resListRole;
+    } else if (type === 1) {
       listConver = resListRole?.filter(
         (item) => item?.createdBy?._id === dataStorage?._id
       );
@@ -243,10 +250,11 @@ const Proposal = () => {
 
   const handleRefresh = async () => {
     const resListRole = await getAllData();
-
     let listConver;
 
-    if (type === 1) {
+    if (dataStorage?.role?.roleName === "admin") {
+      listConver = resListRole;
+    } else if (type === 1) {
       listConver = resListRole?.filter(
         (item) => item?.createdBy?._id === dataStorage?._id
       );
@@ -358,7 +366,10 @@ const Proposal = () => {
       title: "Người duyệt",
       dataIndex: "selectedApprovalProcess",
       render: (_, record) => {
-        const userInfo = record.selectedApprovalProcess.steps.pop();
+        const userInfo =
+          record.selectedApprovalProcess.steps[
+            record.selectedApprovalProcess.steps.length - 1
+          ];
         if (record?.status === "Approved") {
           return userInfo?.approvers[0]?.user?.fullName;
         } else {
@@ -369,57 +380,82 @@ const Proposal = () => {
     {
       title: "Trạng thái",
       dataIndex: "status",
-      render: (_, { status }) => (
+      render: (_, record) => (
         <Tag
           color={
-            status === "Approved"
+            record.selectedApprovalProcess.steps[
+              record.selectedApprovalProcess.steps.length - 1
+            ].approvers.status === "Approved"
               ? "green"
-              : status === "Pending"
+              : record.selectedApprovalProcess.steps[
+                  record.selectedApprovalProcess.steps.length - 1
+                ].approvers.status === "Pending"
               ? "orange"
               : "red"
           }
-          key={status}
+          key={
+            record.selectedApprovalProcess.steps[
+              record.selectedApprovalProcess.steps.length - 1
+            ].approvers.status
+          }
         >
-          {status === "Approved"
+          {record.selectedApprovalProcess.steps[
+            record.selectedApprovalProcess.steps.length - 1
+          ].approvers.status === "Approved"
             ? "Đã duyệt"
-            : status === "Pending"
+            : record.selectedApprovalProcess.steps[
+                record.selectedApprovalProcess.steps.length - 1
+              ].approvers.status === "Pending"
             ? "Chờ duyệt"
             : "Đã từ chối"}
         </Tag>
       ),
     },
-    // {
-    //   title: "tài liệu",
-    //   dataIndex: "file",
-    //   render: (_, record) => (
-    //     <a href={`${process.env.REACT_APP_API_URL}${record.file}`}>
-    //       <Tooltip title="Tải file">
-    //         <Button
-    //           type="danger"
-    //           shape="circle"
-    //           icon={<FolderViewOutlined />}
-    //           size="large"
-    //         />
-    //       </Tooltip>
-    //     </a>
-    //   ),
-    // },
+
     {
       title: "Thao tác",
       key: "action",
       render: (_, record) => (
-        <Tooltip title="xem">
-          <Button
-            type="danger"
-            shape="circle"
-            icon={<EyeOutlined />}
-            size="large"
-            onClick={() => showInfo(record.key)}
-          />
-        </Tooltip>
+        <>
+          <Tooltip title="xem">
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<EyeOutlined />}
+              size="small"
+              onClick={() => showInfo(record.key)}
+            />
+          </Tooltip>
+          {dataStorage?.role?.roleName === "admin" && (
+            <Tooltip title="Xóa">
+              <Button
+                style={{
+                  marginLeft: "10px",
+                }}
+                type="primary"
+                danger
+                shape="circle"
+                icon={<DeleteOutlined />}
+                size="small"
+                onClick={() => onDelete(record.key)}
+              />
+            </Tooltip>
+          )}
+        </>
       ),
     },
   ];
+
+  const onDelete = async (key) => {
+    if (window.confirm("Bạn có chắc muốn xóa không?")) {
+      const dataRes = await deleteProposal(key);
+      dataRes.status === 1
+        ? message.success(`Xóa thành công!`)
+        : message.error(`Xóa thất bại!`);
+
+      handleRefresh();
+    }
+  };
 
   const onClose = () => {
     setVisibleForm(false);
@@ -444,54 +480,28 @@ const Proposal = () => {
     const resListRole = await getAllData();
     let listConver;
 
-    if (value === 1) {
+    if (dataStorage?.role?.roleName === "admin") {
+      listConver = resListRole;
+    } else if (value === 1) {
       listConver = resListRole?.filter(
         (item) => item?.createdBy?._id === dataStorage?._id
       );
     } else if (value === 2) {
-      listConver = resListRole?.filter((proposal) => {
-        let isCurrentUserCanSee = false;
-
-        for (
-          let i = 0;
-          i < proposal.selectedApprovalProcess.steps.length;
-          i++
-        ) {
-          const step = proposal.selectedApprovalProcess.steps[i];
-          if (step.approvers.status === "Approved") {
-            if (step.approvers.user._id === dataStorage?._id) {
-              isCurrentUserCanSee = true;
-              break;
-            } else {
-              break;
-            }
-          }
-        }
-
-        return isCurrentUserCanSee;
-      });
+      listConver = resListRole?.filter((proposal) =>
+        proposal.selectedApprovalProcess.steps.some(
+          (step) =>
+            step.approvers.status === "Approved" &&
+            step.approvers.user._id === dataStorage?._id
+        )
+      );
     } else if (value === 3) {
-      listConver = resListRole?.filter((proposal) => {
-        let isCurrentUserCanSee = false;
-
-        for (
-          let i = 0;
-          i < proposal.selectedApprovalProcess.steps.length;
-          i++
-        ) {
-          const step = proposal.selectedApprovalProcess.steps[i];
-          if (step.approvers.status === "Rejected") {
-            if (step.approvers.user._id === dataStorage?._id) {
-              isCurrentUserCanSee = true;
-              break;
-            } else {
-              break;
-            }
-          }
-        }
-
-        return isCurrentUserCanSee;
-      });
+      listConver = resListRole?.filter((proposal) =>
+        proposal.selectedApprovalProcess.steps.some(
+          (step) =>
+            step.approvers.status === "Rejected" &&
+            step.approvers.user._id === dataStorage?._id
+        )
+      );
     } else {
       listConver = resListRole?.filter((proposal) => {
         let isCurrentUserCanSee = false;
@@ -656,26 +666,32 @@ const Proposal = () => {
                 onFinish={onFinish}
                 autoComplete="off"
               >
-                <Row>
-                  <Col sm={3}>
-                    <Form.Item label="Loại đề xuất" style={{ width: "250px" }}>
-                      <Select defaultValue={1} onChange={handleChangType}>
-                        <Option key={1} value={1}>
-                          Đề xuất của tôi
-                        </Option>
-                        <Option key={4} value={4}>
-                          Đề xuất chờ duyệt
-                        </Option>
-                        <Option key={2} value={2}>
-                          Đề xuất đã duyệt
-                        </Option>
-                        <Option key={3} value={3}>
-                          Đề xuất đã từ chối
-                        </Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
+                {dataStorage?.role?.roleName !== "admin" && (
+                  <Row>
+                    <Col sm={3}>
+                      <Form.Item
+                        label="Loại đề xuất"
+                        style={{ width: "250px" }}
+                      >
+                        <Select defaultValue={1} onChange={handleChangType}>
+                          <Option key={1} value={1}>
+                            Đề xuất của tôi
+                          </Option>
+                          <Option key={4} value={4}>
+                            Đề xuất chờ duyệt
+                          </Option>
+                          <Option key={2} value={2}>
+                            Đề xuất đã duyệt
+                          </Option>
+                          <Option key={3} value={3}>
+                            Đề xuất đã từ chối
+                          </Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                )}
+
                 <Form.Item className="mt-3">
                   <Space>
                     <Button type="primary" onClick={handleNewRole}>

@@ -222,6 +222,10 @@ export const getByIdProposal = (id) => {
   return axios.get(`api/proposal/getById/${id}`);
 };
 
+export const deleteProposal = (id) => {
+  return axios.delete(`api/proposal/delete/${id}`);
+};
+
 export const comment = (id, data) => {
   return axios.post(`api/proposal/comment/${id}`, data);
 };
@@ -232,4 +236,8 @@ export const reject = (id, data) => {
 
 export const approve = (id, data) => {
   return axios.post(`api/proposal/approve/${id}`, data);
+};
+
+export const changeStatus = (id) => {
+  return axios.put(`api/proposal/changeStatus/${id}`);
 };

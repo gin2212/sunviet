@@ -98,14 +98,14 @@ const Approval_Process = () => {
         <div>
           {record.steps?.map((step, index) => (
             <div key={index}>
-              <p>{step.stepName}</p>
+              <p>{step?.stepName}</p>
               <Tag
                 color="cyan"
                 style={{
                   marginLeft: 3,
                 }}
               >
-                {step.approvers.user.fullName}
+                {step?.approvers?.user?.fullName}
               </Tag>
             </div>
           ))}
@@ -295,10 +295,10 @@ const Approval_Process = () => {
             >
               {listUser?.length > 0 &&
                 listUser?.map((item) => {
-                  if (item._id !== dataStorage._id) {
+                  if (item?._id !== dataStorage?._id) {
                     return (
-                      <Option key={item._id} value={item._id}>
-                        {item.fullName}
+                      <Option key={item?._id} value={item?._id}>
+                        {item?.fullName}
                       </Option>
                     );
                   }

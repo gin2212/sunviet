@@ -114,10 +114,6 @@ async function getProposalById(req, res) {
           path: "role",
           model: "Roles",
         },
-      })
-      .populate({
-        path: "createdBy",
-
         populate: {
           path: "department",
           model: "Departments",
@@ -138,7 +134,6 @@ async function getProposalById(req, res) {
           model: "Users",
         },
       });
-
     res.json(proposal);
   } catch (error) {
     res.status(404).json(new ResponseModel(404, error.message, error));
@@ -306,19 +301,29 @@ async function approveStep(req, res) {
         .json({ message: "User không có quyền duyệt bước này." });
     }
 
-    if (stepIndex >= steps.length - 1) {
-      proposal.status = "Approved";
-      await proposal.save();
-    }
-
     let clonedApprovalProcess = await ClonedApprovalProcess.findById(
       proposal.selectedApprovalProcess._id
     );
     clonedApprovalProcess.steps[stepIndex].approvers.status = "Approved";
     clonedApprovalProcess.save();
 
+    // if (stepIndex >= steps.length - 1) {
+    //   proposal.status = "Approved";
+
+    //   await proposal.save();
+    // }
+    const proposal1 = await Proposal.findById(proposalId)
+      .populate("createdBy")
+      .populate("project")
+      .populate({
+        path: "selectedApprovalProcess",
+        populate: {
+          path: "steps.approvers.user",
+          model: "Users",
+        },
+      });
     let response = new ResponseModel(1, "Bước duyệt đã được duyệt.", {
-      proposal,
+      proposal1,
     });
 
     res.json(response);
@@ -498,6 +503,13 @@ async function addComment(req, res) {
   }
 }
 
+async function changeStatus(req, res) {
+  const proposal = await Proposal.findById(req.params.id);
+  proposal.status = "Approved";
+
+  proposal.save();
+}
+
 module.exports = {
   createProposal,
   getAllProposals,
@@ -508,4 +520,5 @@ module.exports = {
   addComment,
   rejectStep,
   approveStep,
+  changeStatus,
 };
