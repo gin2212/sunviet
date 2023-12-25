@@ -392,7 +392,6 @@ class ComponentToPrint extends React.Component {
           }
 
           .app {
-            border: 2px solid #ccc;
             padding: 10px;
           }
 
@@ -592,7 +591,7 @@ class ComponentToPrint extends React.Component {
           }
         `}</style>
 
-        <div class="body">
+        <div className="body">
           <div className="app">
             <header className="header">
               <div className="logo">
@@ -701,7 +700,9 @@ class ComponentToPrint extends React.Component {
                 ...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
               </span>
               <span className="opinion-proposer-content-last-child">
-                {info?.comments[info?.comments?.length - 4]?.content}
+                {info?.comments
+                  ? info?.comments[info?.comments.length - 4]?.content
+                  : ""}
               </span>
               <div
                 className="proposer"
@@ -719,8 +720,10 @@ class ComponentToPrint extends React.Component {
                   <img
                     style={{ width: "150px" }}
                     src={
-                      info?.comments[info?.comments?.length - 2]?.user
-                        ?.signatureImage
+                      info?.comments
+                        ? info?.comments[info.comments.length - 4]?.user
+                            ?.signatureImage
+                        : ""
                     }
                     alt=""
                   />
@@ -728,7 +731,9 @@ class ComponentToPrint extends React.Component {
                 <p className="proposer-title">
                   <span style={{ marginRight: "10px" }}>Họ và tên:</span>
                   <span>
-                    {info?.comments[info?.comments?.length - 2]?.user?.fullName}
+                    {info?.comments
+                      ? info?.comments[info.comments.length - 4]?.user?.fullName
+                      : ""}
                   </span>
                 </p>
               </div>
@@ -746,7 +751,9 @@ class ComponentToPrint extends React.Component {
                 ...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
               </span>
               <span className="opinion-proposer-content-last-child">
-                {info?.comments[info?.comments?.length - 3]?.content}
+                {info?.comments
+                  ? info?.comments[info.comments.length - 3]?.content
+                  : ""}
               </span>
               <div
                 className="proposer"
@@ -764,8 +771,10 @@ class ComponentToPrint extends React.Component {
                   <img
                     style={{ width: "150px" }}
                     src={
-                      info?.comments[info?.comments?.length - 1]?.user
-                        ?.signatureImage
+                      info?.comments
+                        ? info?.comments[info.comments.length - 3]?.user
+                            ?.signatureImage
+                        : ""
                     }
                     alt=""
                   />
@@ -773,7 +782,9 @@ class ComponentToPrint extends React.Component {
                 <p className="proposer-title">
                   <span style={{ marginRight: "10px" }}>Họ và tên:</span>
                   <span>
-                    {info?.comments[info?.comments?.length - 1]?.user?.fullName}
+                    {info?.comments
+                      ? info?.comments[info.comments.length - 3]?.user?.fullName
+                      : ""}
                   </span>
                 </p>
               </div>
@@ -792,7 +803,9 @@ class ComponentToPrint extends React.Component {
                 ...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
               </span>
               <span className="opinion-proposer-content-last-child">
-                {info?.comments[info?.comments?.length - 2]?.content}
+                {info?.comments
+                  ? info?.comments[info.comments.length - 2]?.content
+                  : ""}
               </span>
               <div
                 className="proposer"
@@ -810,8 +823,10 @@ class ComponentToPrint extends React.Component {
                   <img
                     style={{ width: "150px" }}
                     src={
-                      info?.comments[info?.comments?.length - 1]?.user
-                        ?.signatureImage
+                      info?.comments
+                        ? info?.comments[info.comments.length - 2]?.user
+                            ?.signatureImage
+                        : ""
                     }
                     alt=""
                   />
@@ -819,7 +834,9 @@ class ComponentToPrint extends React.Component {
                 <p className="proposer-title">
                   <span style={{ marginRight: "10px" }}>Họ và tên:</span>
                   <span>
-                    {info?.comments[info?.comments?.length - 1]?.user?.fullName}
+                    {info?.comments
+                      ? info?.comments[info.comments.length - 2]?.user?.fullName
+                      : ""}
                   </span>
                 </p>
               </div>
@@ -833,7 +850,9 @@ class ComponentToPrint extends React.Component {
                 ...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
               </span>
               <span className="opinion-proposer-content-last-child">
-                {info?.comments[info?.comments?.length - 1]?.content}
+                {info?.comments
+                  ? info?.comments[info.comments.length - 1]?.content
+                  : ""}
               </span>
               <div
                 className="proposer"
@@ -851,8 +870,10 @@ class ComponentToPrint extends React.Component {
                   <img
                     style={{ width: "150px" }}
                     src={
-                      info?.comments[info?.comments?.length - 1]?.user
-                        ?.signatureImage
+                      info?.comments
+                        ? info?.comments[info.comments.length - 1]?.user
+                            ?.signatureImage
+                        : ""
                     }
                     alt=""
                   />
@@ -860,7 +881,9 @@ class ComponentToPrint extends React.Component {
                 <p className="proposer-title">
                   <span style={{ marginRight: "10px" }}>Họ và tên:</span>
                   <span>
-                    {info?.comments[info?.comments?.length - 1]?.user?.fullName}
+                    {info?.comments
+                      ? info?.comments[info.comments.length - 1]?.user?.fullName
+                      : ""}
                   </span>
                 </p>
               </div>
@@ -870,8 +893,13 @@ class ComponentToPrint extends React.Component {
                 <div>
                   <h3>giám đốc duyệt</h3>
 
-                  <div className="signature">
+                  <div className="signature" style={{ position: "relative" }}>
                     <img
+                      style={{
+                        width: "180px",
+                        height: "100px",
+                        objectFit: "contain",
+                      }}
                       src={
                         info?.selectedApprovalProcess?.steps[
                           info?.selectedApprovalProcess?.steps?.length - 1
@@ -881,6 +909,7 @@ class ComponentToPrint extends React.Component {
                     />
 
                     <img
+                      style={{ position: "absolute" }}
                       src={
                         info?.selectedApprovalProcess?.steps[
                           info?.selectedApprovalProcess?.steps?.length - 1

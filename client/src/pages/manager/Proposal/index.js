@@ -370,8 +370,8 @@ const Proposal = () => {
           record.selectedApprovalProcess.steps[
             record.selectedApprovalProcess.steps.length - 1
           ];
-        if (record?.status === "Approved") {
-          return userInfo?.approvers[0]?.user?.fullName;
+        if (userInfo?.approvers?.status === "Approved") {
+          return userInfo?.approvers?.user?.fullName;
         } else {
           return "Chưa được duyệt";
         }
@@ -387,9 +387,7 @@ const Proposal = () => {
               record.selectedApprovalProcess.steps.length - 1
             ].approvers.status === "Approved"
               ? "green"
-              : record.selectedApprovalProcess.steps[
-                  record.selectedApprovalProcess.steps.length - 1
-                ].approvers.status === "Pending"
+              : record.status === "Pending"
               ? "orange"
               : "red"
           }
@@ -399,13 +397,11 @@ const Proposal = () => {
             ].approvers.status
           }
         >
-          {record.selectedApprovalProcess.steps[
+          {record?.selectedApprovalProcess?.steps[
             record.selectedApprovalProcess.steps.length - 1
-          ].approvers.status === "Approved"
+          ]?.approvers?.status === "Approved"
             ? "Đã duyệt"
-            : record.selectedApprovalProcess.steps[
-                record.selectedApprovalProcess.steps.length - 1
-              ].approvers.status === "Pending"
+            : record?.status === "Pending"
             ? "Chờ duyệt"
             : "Đã từ chối"}
         </Tag>
@@ -513,7 +509,10 @@ const Proposal = () => {
           i++
         ) {
           const step = proposal.selectedApprovalProcess.steps[i];
-          if (step.approvers.status === "Pending") {
+          if (
+            step.approvers.status === "Pending" &&
+            proposal?.status !== "Pending"
+          ) {
             if (step.approvers.user._id === dataStorage?._id) {
               isCurrentUserCanSee = true;
               break;

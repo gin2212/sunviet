@@ -132,7 +132,7 @@ const HeaderMain = ({ collapsed, setCollapsed }) => {
       const data = await markAsRead(item._id);
       if (data.status === 1) {
         fetchData();
-        navigate(`/proposal/${item._id}`);
+        navigate(`/proposal/${item.proposal}`);
       }
     } catch (error) {
       console.log(error);
