@@ -201,7 +201,10 @@ const Proposal = () => {
           i++
         ) {
           const step = proposal.selectedApprovalProcess.steps[i];
-          if (step.approvers.status === "Pending") {
+          if (
+            step.approvers.status === "Pending" &&
+            proposal?.status === "Pending"
+          ) {
             if (step.approvers.user._id === dataStorage?._id) {
               isCurrentUserCanSee = true;
               break;
@@ -243,9 +246,6 @@ const Proposal = () => {
     form.resetFields();
     handleCloseDrawer();
     handleRefresh();
-  };
-  const handleRefreshCreate = () => {
-    form.resetFields();
   };
 
   const handleRefresh = async () => {
@@ -305,7 +305,6 @@ const Proposal = () => {
     } else {
       listConver = resListRole?.filter((proposal) => {
         let isCurrentUserCanSee = false;
-
         // Kiểm tra từng bước trong selectedApprovalProcess
         for (
           let i = 0;
@@ -511,7 +510,7 @@ const Proposal = () => {
           const step = proposal.selectedApprovalProcess.steps[i];
           if (
             step.approvers.status === "Pending" &&
-            proposal?.status !== "Pending"
+            proposal?.status === "Pending"
           ) {
             if (step.approvers.user._id === dataStorage?._id) {
               isCurrentUserCanSee = true;
@@ -958,22 +957,7 @@ const Proposal = () => {
               </Drawer>
             </Col>
           </div>
-          <Table
-            columns={columns}
-            dataSource={listRole}
-            // pagination={tableParams.pagination}
-            loading={loading}
-            // onChange={handleTableChange}
-          />
-          {/* <DataTable
-            listData={listRole}
-            pageSize={pageSize}
-            columns={columns}
-            indexPage={indexPage}
-            totalPage={totalPage}
-            onPageChange={onPageChange}
-            loading={loading}
-          /> */}
+          <Table columns={columns} dataSource={listRole} loading={loading} />
         </Container>
       </div>
     </React.Fragment>

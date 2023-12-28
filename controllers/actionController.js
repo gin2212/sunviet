@@ -1,4 +1,3 @@
-const { isValidObjectId } = require("mongoose");
 const Actions = require("../database/entities/authentication/Actions");
 const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
@@ -55,31 +54,25 @@ async function updateAction(req, res) {
 
 async function deleteAction(req, res) {
   if (req.actions.includes("action")) {
-    if (isValidObjectId(req.params.id)) {
-      try {
-        const role = await RoleActions.find({ action: req.params.id });
+    try {
+      const role = await RoleActions.find({ action: req.params.id });
 
-        if (role.length > 0) {
-          let response = new ResponseModel(0, "Quyền đang được sử dụng", null);
-          return res.json(response);
-        }
+      if (role.length > 0) {
+        let response = new ResponseModel(0, "Quyền đang được sử dụng", null);
+        return res.json(response);
+      }
 
-        const action = await Actions.findByIdAndDelete(req.params.id);
-        if (!action) {
-          let response = new ResponseModel(0, "No item found!", null);
-          res.json(response);
-        } else {
-          let response = new ResponseModel(1, "Delete action success!", null);
-          res.json(response);
-        }
-      } catch (error) {
-        let response = new ResponseModel(-2, error.message, error);
+      const action = await Actions.findByIdAndDelete(req.params.id);
+      if (!action) {
+        let response = new ResponseModel(0, "No item found!", null);
+        res.json(response);
+      } else {
+        let response = new ResponseModel(1, "Delete action success!", null);
         res.json(response);
       }
-    } else {
-      res
-        .status(404)
-        .json(new ResponseModel(404, "ActionId is not valid!", null));
+    } catch (error) {
+      let response = new ResponseModel(-2, error.message, error);
+      res.json(response);
     }
   } else {
     res.sendStatus(403);
@@ -122,17 +115,11 @@ async function getPagingActions(req, res) {
 }
 
 async function getActionById(req, res) {
-  if (isValidObjectId(req.params.id)) {
-    try {
-      let action = await Actions.findById(req.params.id);
-      res.json(action);
-    } catch (error) {
-      res.status(404).json(404, error.message, error);
-    }
-  } else {
-    res
-      .status(404)
-      .json(new ResponseModel(404, "ActionId is not valid!", null));
+  try {
+    let action = await Actions.findById(req.params.id);
+    res.json(action);
+  } catch (error) {
+    res.status(404).json(404, error.message, error);
   }
 }
 

@@ -71,17 +71,11 @@ async function getAllApprovalProcesses(req, res) {
 
 // Lấy thông tin của một Quy trình duyệt
 async function getApprovalProcessById(req, res) {
-  if (isValidObjectId(req.params.id)) {
-    try {
-      let approvalProcess = await ApprovalProcess.findById(req.params.id);
-      res.json(approvalProcess);
-    } catch (error) {
-      res.status(404).json(404, error.message, error);
-    }
-  } else {
-    res
-      .status(404)
-      .json(new ResponseModel(404, "ApprovalProcessId is not valid!", null));
+  try {
+    let approvalProcess = await ApprovalProcess.findById(req.params.id);
+    res.json(approvalProcess);
+  } catch (error) {
+    res.status(404).json(404, error.message, error);
   }
 }
 

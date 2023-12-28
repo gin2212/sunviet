@@ -1,5 +1,4 @@
 // departmentController.js
-const { isValidObjectId } = require("mongoose");
 const Departments = require("../database/entities/Departments");
 const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
@@ -119,17 +118,11 @@ async function getPagingDepartments(req, res) {
 }
 
 async function getDepartmentById(req, res) {
-  if (isValidObjectId(req.params.id)) {
-    try {
-      let department = await Departments.findById(req.params.id);
-      res.json(department);
-    } catch (error) {
-      res.status(404).json(404, error.message, error);
-    }
-  } else {
-    res
-      .status(404)
-      .json(new ResponseModel(404, "DepartmentId is not valid!", null));
+  try {
+    let department = await Departments.findById(req.params.id);
+    res.json(department);
+  } catch (error) {
+    res.status(404).json(404, error.message, error);
   }
 }
 

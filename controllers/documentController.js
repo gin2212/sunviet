@@ -1,7 +1,17 @@
-const { isValidObjectId } = require("mongoose");
 const Documents = require("../database/entities/Documents");
 const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
+const Users = require("../database/entities/authentication/Users");
+const nodemailer = require("nodemailer");
+const Notifies = require("../database/entities/Notify");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "winterwyvernwendy@gmail.com",
+    pass: "impslqjbynjvqnbw",
+  },
+});
 
 async function createDocument(req, res) {
   try {
@@ -10,6 +20,33 @@ async function createDocument(req, res) {
 
     if (req?.file) {
       document.file = `files/${req.userId}/${req.file.filename}`;
+    }
+
+    if (req?.body?.department == undefined) {
+      const users = await Users.find({ department: req.body.department });
+
+      users.forEach(async (user) => {
+        const notify = new Notifies({
+          createdAt: Date.now(),
+          message: `Có 1 tài liệu mới`,
+          type: 1,
+          recipient: user._id,
+          proposal: req.body.department,
+        });
+
+        notify.save();
+
+        const mailOptions = {
+          from: "winterwyvernwendy@gmail.com",
+          to: user.email,
+          subject: `Có 1 tài liệu mới`,
+          text: "Có 1 tài liệu mới",
+        };
+
+        await transporter.sendMail(mailOptions);
+      });
+    } else {
+      document.department = "60d5ecb44b492bd6a3a2621a";
     }
 
     await document.save();
@@ -36,20 +73,14 @@ async function getAllDocuments(req, res) {
 }
 
 async function getDocumentById(req, res) {
-  if (isValidObjectId(req.params.id)) {
-    try {
-      const document = await Documents.findById(req.params.id).populate(
-        "department createdBy updatedBy",
-        "departmentName username"
-      );
-      res.json(document);
-    } catch (error) {
-      res.status(404).json(404, error.message, error);
-    }
-  } else {
-    res
-      .status(404)
-      .json(new ResponseModel(404, "DocumentId is not valid!", null));
+  try {
+    const document = await Documents.findById(req.params.id).populate(
+      "department createdBy updatedBy",
+      "departmentName username"
+    );
+    res.json(document);
+  } catch (error) {
+    res.status(404).json(404, error.message, error);
   }
 }
 
@@ -111,11 +142,15 @@ async function getPagingDocuments(req, res) {
 
     const searchObj = {};
     if (req.query.search) {
-      searchObj.title = { $regex: `.*${req.query.search}.*`, $options: "i" };
+      searchObj.title = { $regex: `.*${req.query.search}.*`, $options: "s" };
     }
 
-    if (req.query.department) {
-      searchObj.department = req.query.department;
+    const departmentFilter = req.query.department
+      ? { $in: [req.query.department, "60d5ecb44b492bd6a3a2621a"] }
+      : undefined;
+
+    if (departmentFilter) {
+      searchObj.department = departmentFilter;
     }
 
     const documents = await Documents.find(searchObj)

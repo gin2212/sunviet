@@ -134,6 +134,7 @@ async function getProposalById(req, res) {
           model: "Users",
         },
       });
+
     res.json(proposal);
   } catch (error) {
     res.status(404).json(new ResponseModel(404, error.message, error));

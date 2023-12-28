@@ -9,7 +9,10 @@ const documentSchema = new Schema({
   content: { type: String },
   authority: { type: String },
   issueDate: { type: Date },
-  department: { type: Schema.Types.ObjectId, ref: "Departments" },
+  department: {
+    type: Schema.Types.ObjectId,
+    ref: "Departments",
+  },
   createdBy: { type: Schema.Types.ObjectId, ref: "Users", required: true },
   createdTime: { type: Date, default: Date.now },
   updatedTime: { type: Date },

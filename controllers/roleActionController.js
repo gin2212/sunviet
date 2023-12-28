@@ -3,7 +3,6 @@ const Roles = require("../database/entities/authentication/Roles");
 const ResponseModel = require("../models/ResponseModel");
 const PagedModel = require("../models/PagedModel");
 const Users = require("../database/entities/authentication/Users");
-const { isValidObjectId } = require("mongoose");
 require("dotenv").config();
 
 async function createRoleAction(req, res) {
@@ -106,28 +105,18 @@ async function createRoleActions(req, res) {
 
 async function deleteRoleAction(req, res) {
   if (req.actions.includes("role-action")) {
-    if (isValidObjectId(req.params.id)) {
-      try {
-        const roleAction = await RoleActions.findByIdAndDelete(req.params.id);
-        if (!roleAction) {
-          let response = new ResponseModel(0, "No item found!", null);
-          res.json(response);
-        } else {
-          let response = new ResponseModel(
-            1,
-            "Delete roleaction success!",
-            null
-          );
-          res.json(response);
-        }
-      } catch (error) {
-        let response = new ResponseModel(404, error.message, error);
-        res.status(404).json(response);
+    try {
+      const roleAction = await RoleActions.findByIdAndDelete(req.params.id);
+      if (!roleAction) {
+        let response = new ResponseModel(0, "No item found!", null);
+        res.json(response);
+      } else {
+        let response = new ResponseModel(1, "Delete roleaction success!", null);
+        res.json(response);
       }
-    } else {
-      res
-        .status(404)
-        .json(new ResponseModel(404, "RoleActionId is not valid!", null));
+    } catch (error) {
+      let response = new ResponseModel(404, error.message, error);
+      res.status(404).json(response);
     }
   } else {
     res.sendStatus(403);

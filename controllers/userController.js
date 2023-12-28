@@ -1,6 +1,5 @@
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-const { isValidObjectId } = require("mongoose");
 const Users = require("../database/entities/authentication/Users");
 const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
@@ -194,24 +193,18 @@ async function getUserById(req, res) {
 
 async function deleteUser(req, res) {
   if (req.actions.includes("user")) {
-    if (isValidObjectId(req.params.id)) {
-      try {
-        let tag = await Users.findByIdAndDelete(req.params.id);
-        if (!tag) {
-          let response = new ResponseModel(0, "No item found!", null);
-          res.json(response);
-        } else {
-          let response = new ResponseModel(1, "Delete user success!", null);
-          res.json(response);
-        }
-      } catch (error) {
-        let response = new ResponseModel(404, error.message, error);
-        res.status(404).json(response);
+    try {
+      let tag = await Users.findByIdAndDelete(req.params.id);
+      if (!tag) {
+        let response = new ResponseModel(0, "No item found!", null);
+        res.json(response);
+      } else {
+        let response = new ResponseModel(1, "Delete user success!", null);
+        res.json(response);
       }
-    } else {
-      res
-        .status(404)
-        .json(new ResponseModel(404, "UserId is not valid!", null));
+    } catch (error) {
+      let response = new ResponseModel(404, error.message, error);
+      res.status(404).json(response);
     }
   } else {
     res.sendStatus(403);

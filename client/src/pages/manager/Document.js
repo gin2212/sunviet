@@ -29,7 +29,6 @@ import {
   deleteDocument,
 } from "../../services/api";
 import dayjs from "dayjs";
-import FileViewer from "react-file-viewer";
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -72,14 +71,18 @@ function Document() {
       _prams &&
         dataStorage?.role?.roleName === "Nhân viên" &&
         (_prams.Department = dataStorage?.department);
-      console.log(_prams);
+      console.log(dataStorage?.department);
+
       const params = _prams
         ? _prams
         : {
             page: 1,
             limit: 10,
             search: "",
-            department: dataStorage?.department,
+            department:
+              dataStorage?.role?.roleName === "Nhân viên"
+                ? dataStorage?.department
+                : "",
           };
 
       const res = await getPagingDocument(params);
@@ -327,23 +330,6 @@ function Document() {
 
   return (
     <React.Fragment>
-      <Modal
-        open={previewOpen}
-        title={previewTitle}
-        footer={null}
-        onCancel={handleCancel}
-        width="80%"
-        style={{
-          maxHeight: "80%",
-          overflowY: "scroll",
-        }}
-      >
-        <FileViewer
-          fileType={previewImage?.fileExtension}
-          filePath={previewImage?.file}
-          onError={(e) => console.log("Error:", e)}
-        />
-      </Modal>
       <div className="page-content">
         <Container fluid>
           <div>
@@ -434,20 +420,7 @@ function Document() {
                       <p className="ant-upload-text">Bấm hoặc thả file vào</p>
                     </Dragger>
                   </Form.Item>
-                  <Form.Item
-                    rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng chọn cơ quan lưu trữ!",
-                      },
-                      {
-                        type: "string",
-                        min: 1,
-                      },
-                    ]}
-                    name="department"
-                    label="cơ quan lưu trữ"
-                  >
+                  <Form.Item name="department" label="cơ quan lưu trữ">
                     <Select
                       placeholder="Chọn một cơ quan lưu trữ..."
                       allowClear

@@ -12,6 +12,10 @@ let Notifieschema = new Schema({
     type: Boolean,
     default: 0,
   },
+  type: {
+    type: Boolean,
+    default: 0,
+  },
   recipient: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Users",

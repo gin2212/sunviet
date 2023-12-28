@@ -1,4 +1,3 @@
-const { isValidObjectId } = require("mongoose");
 const Roles = require("../database/entities/authentication/Roles");
 const Users = require("../database/entities/authentication/Users");
 const roleAction = require("../database/entities/authentication/RoleActions");
@@ -54,39 +53,33 @@ async function updateRole(req, res) {
 
 async function deleteRole(req, res) {
   if (req.actions.includes("role")) {
-    if (isValidObjectId(req.params.id)) {
-      try {
-        const user = await Users.find({ role: req.params.id });
+    try {
+      const user = await Users.find({ role: req.params.id });
 
-        if (user.length > 0) {
-          let response = new ResponseModel(0, "Quyền đang được sử dụng", null);
-          return res.json(response);
-        }
-
-        const roleActions = await roleAction.find({ role: req.params.id });
-        if (roleActions.length > 0) {
-          for (const roleAction of roleActions) {
-            await roleAction.remove();
-          }
-        }
-
-        const role = await Roles.findByIdAndDelete(req.params.id);
-
-        if (!role) {
-          let response = new ResponseModel(0, "No item found!", null);
-          return res.json(response);
-        }
-
-        let response = new ResponseModel(1, "Delete role success!", null);
-        res.json(response);
-      } catch (error) {
-        let response = new ResponseModel(404, error.message, error);
-        res.status(404).json(response);
+      if (user.length > 0) {
+        let response = new ResponseModel(0, "Quyền đang được sử dụng", null);
+        return res.json(response);
       }
-    } else {
-      res
-        .status(404)
-        .json(new ResponseModel(404, "RoleId is not valid!", null));
+
+      const roleActions = await roleAction.find({ role: req.params.id });
+      if (roleActions.length > 0) {
+        for (const roleAction of roleActions) {
+          await roleAction.remove();
+        }
+      }
+
+      const role = await Roles.findByIdAndDelete(req.params.id);
+
+      if (!role) {
+        let response = new ResponseModel(0, "No item found!", null);
+        return res.json(response);
+      }
+
+      let response = new ResponseModel(1, "Delete role success!", null);
+      res.json(response);
+    } catch (error) {
+      let response = new ResponseModel(404, error.message, error);
+      res.status(404).json(response);
     }
   } else {
     res.sendStatus(403);
@@ -129,17 +122,11 @@ async function getPagingRoles(req, res) {
 }
 
 async function getRoleById(req, res) {
-  if (isValidObjectId(req.params.id)) {
-    try {
-      let role = await Roles.findById(req.params.id);
-      res.json(role);
-    } catch (error) {
-      res.status(404).json(404, error.message, error);
-    }
-  } else {
-    res
-      .status(404)
-      .json(new ResponseModel(404, "BannerId is not valid!", null));
+  try {
+    let role = await Roles.findById(req.params.id);
+    res.json(role);
+  } catch (error) {
+    res.status(404).json(404, error.message, error);
   }
 }
 
