@@ -113,7 +113,7 @@ const Sidebar = ({ collapsed }) => {
       style={{
         position: "fixed",
         left: 0,
-        height: "100vh",
+        minHeight: "100vh",
       }}
     >
       <div className="logo-vertical">
