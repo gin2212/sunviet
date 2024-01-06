@@ -45,7 +45,6 @@ const Users = () => {
   const [listRole, setListRole] = useState([]);
   const [visibleForm, setVisibleForm] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("");
-
   const [totalPage, setTotalPage] = useState(1);
   const [indexPage, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -54,6 +53,7 @@ const Users = () => {
   const [imageUrl, setImageUrl] = useState();
   const [imageEditUrl, setImageEditUrl] = useState();
   const [listDepartment, setListDepartment] = useState();
+  const dataStorage = JSON.parse(localStorage.getItem("data"));
 
   useEffect(() => {
     async function fetchData() {
@@ -313,7 +313,7 @@ const Users = () => {
       title: "Hành động",
       dataIndex: "",
       render: (_, record) =>
-        listUser?.length >= 1 ? (
+        listUser?.length >= 1 && dataStorage?.role?.roleName === "admin" ? (
           <Space>
             <Tooltip title="Sửa">
               <Button

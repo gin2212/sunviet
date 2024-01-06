@@ -23,6 +23,7 @@ const Roles = () => {
   const [indexPage, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading] = useState(true);
+  const dataStorage = JSON.parse(localStorage.getItem("data"));
 
   useEffect(() => {
     async function fetchData() {
@@ -184,7 +185,7 @@ const Roles = () => {
       title: "Hành động",
       dataIndex: "",
       render: (_, record) =>
-        listRole.length >= 1 ? (
+        listRole.length >= 1 && dataStorage?.role?.roleName === "admin" ? (
           <Space>
             <Tooltip title="Sửa">
               <Button

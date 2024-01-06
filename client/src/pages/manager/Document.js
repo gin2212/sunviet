@@ -71,7 +71,6 @@ function Document() {
       _prams &&
         dataStorage?.role?.roleName === "Nhân viên" &&
         (_prams.Department = dataStorage?.department);
-      console.log(dataStorage?.department);
 
       const params = _prams
         ? _prams
@@ -172,7 +171,7 @@ function Document() {
       title: "Hành động",
       dataIndex: "",
       render: (_, record) =>
-        listDocument.length >= 1 ? (
+        listDocument.length >= 1 && dataStorage?.role?.roleName === "admin" ? (
           <Space>
             <Tooltip title="Sửa">
               <Button
@@ -224,10 +223,13 @@ function Document() {
     }
 
     formData.append("title", data.title);
-    formData.append("department", data.department);
     formData.append("content", contentData);
     formData.append("authority", data.authority);
     formData.append("issueDate", data.issueDate);
+
+    if (data?.department) {
+      formData.append("department", data.department);
+    }
 
     if (!data.id) {
       //Save

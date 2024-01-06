@@ -6,7 +6,6 @@ import {
   Button,
   Form,
   Space,
-  Select,
   Tooltip,
   Drawer,
 } from "antd";
@@ -101,7 +100,8 @@ function Department() {
       title: "Hành động",
       dataIndex: "",
       render: (_, record) =>
-        listDepartments.length >= 1 ? (
+        listDepartments.length >= 1 &&
+        dataStorage?.role?.roleName === "admin" ? (
           <Space>
             <Tooltip title="Sửa">
               <Button

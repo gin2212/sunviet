@@ -107,7 +107,6 @@ export default function ModalChangePass({
       setStampImage(info.file.originFileObj);
       try {
         const base64 = await convertToBase64(info.file.originFileObj);
-        console.log(base64);
         form.setFieldsValue({
           stampImage: base64,
         });

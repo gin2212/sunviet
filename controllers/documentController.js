@@ -22,8 +22,10 @@ async function createDocument(req, res) {
       document.file = `files/${req.userId}/${req.file.filename}`;
     }
 
-    if (req?.body?.department == undefined) {
-      const users = await Users.find({ department: req.body.department });
+    let users;
+
+    if (req?.body?.department) {
+      users = await Users.find({ department: req.body.department });
 
       users.forEach(async (user) => {
         const notify = new Notifies({
@@ -47,6 +49,28 @@ async function createDocument(req, res) {
       });
     } else {
       document.department = "60d5ecb44b492bd6a3a2621a";
+      users = await Users.find();
+
+      users.forEach(async (user) => {
+        const notify = new Notifies({
+          createdAt: Date.now(),
+          message: `Có 1 tài liệu mới`,
+          type: 1,
+          recipient: user._id,
+          proposal: "60d5ecb44b492bd6a3a2621a",
+        });
+
+        notify.save();
+
+        const mailOptions = {
+          from: "winterwyvernwendy@gmail.com",
+          to: user.email,
+          subject: `Có 1 tài liệu mới`,
+          text: "Có 1 tài liệu mới",
+        };
+
+        await transporter.sendMail(mailOptions);
+      });
     }
 
     await document.save();

@@ -47,7 +47,7 @@ function Detail() {
   };
 
   const handleApproval = async () => {
-    window.location.href = `http://103.79.143.88/:5000/?proposal=${proposal?._id}&token=${token}`;
+    window.location.href = `http://103.79.143.88:5000?proposal=${proposal?._id}&token=${token}`;
   };
   const handleReject = async () => {
     try {

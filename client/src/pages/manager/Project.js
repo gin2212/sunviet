@@ -35,6 +35,7 @@ function Project() {
   const [drawerTitle, setDrawerTitle] = useState();
   const [visibleForm, setVisibleForm] = useState(false);
   const [descriptionData, setDescriptionData] = useState("");
+  const dataStorage = JSON.parse(localStorage.getItem("data"));
 
   useEffect(() => {
     fetchData();
@@ -118,7 +119,7 @@ function Project() {
       title: "Hành động",
       dataIndex: "",
       render: (_, record) =>
-        listProjects.length >= 1 ? (
+        listProjects.length >= 1 && dataStorage?.role?.roleName === "admin" ? (
           <Space>
             <Tooltip title="Sửa">
               <Button

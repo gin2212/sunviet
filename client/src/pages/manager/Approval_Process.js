@@ -116,7 +116,8 @@ const Approval_Process = () => {
       title: "Hành động",
       dataIndex: "",
       render: (_, record) =>
-        listApprovalProcess.length >= 1 ? (
+        listApprovalProcess.length >= 1 &&
+        dataStorage?.role?.roleName === "admin" ? (
           <Space>
             <Tooltip title="Xóa">
               <Button

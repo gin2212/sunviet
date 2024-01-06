@@ -48,7 +48,6 @@ async function createProposal(req, res) {
       category: req.body.category,
       selectedApprovalProcess: clonedApprovalProcess._id,
       content: req.body.content,
-      proposalContent: JSON.parse(req.body.proposalContent),
     });
 
     await proposal.save();

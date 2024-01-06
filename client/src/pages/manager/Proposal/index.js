@@ -13,15 +13,8 @@ import {
   Select,
   Tag,
   Table,
-  Typography,
-  InputNumber,
 } from "antd";
-import {
-  EyeOutlined,
-  InboxOutlined,
-  SmileOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { EyeOutlined, InboxOutlined, DeleteOutlined } from "@ant-design/icons";
 import {
   getAllProposals,
   createProposal,
@@ -77,16 +70,9 @@ const Proposal = () => {
   const handleSave = () => {
     const signatureDataUrl = signatureRef.current.toDataURL();
     setSignatureDataUrl(signatureDataUrl);
-    // const link = document.createElement("a");
-    // link.href = signatureDataUrl;
-    // link.download = "chuky.png";
-    // link.click();
     setVisible(false);
   };
 
-  const showUserModal = () => {
-    setOpen(true);
-  };
   const hideUserModal = () => {
     setOpen(false);
   };
@@ -112,7 +98,6 @@ const Proposal = () => {
       return dataRes ? data : false;
     } catch (error) {
       message.error("Lấy danh sách đề xuất thất bại!");
-      return [];
     }
   };
 
@@ -233,14 +218,16 @@ const Proposal = () => {
     formData.append("project", data.project);
     formData.append("content", contentData);
     formData.append("approvalProcessId", data.selectedApprovalProcess);
-    formData.append("proposalContent", JSON.stringify(data.proposalContent));
 
-    if (!data.id) {
+    if (!data.id && file) {
       //Save
       const dataRes = await createProposal(formData);
       dataRes.status === 1
         ? message.success(`Lưu thành công!`)
         : message.error(`Lưu thất bại!`);
+    } else {
+      message.error(`Vui lòng chọn file!`);
+      return;
     }
     formSearch.resetFields();
     form.resetFields();
@@ -528,104 +515,6 @@ const Proposal = () => {
     setListRole(listConver);
   };
 
-  // reset form fields when modal is form, closed
-  const useResetFormOnCloseModal = ({ form, open }) => {
-    const prevOpenRef = useRef();
-    useEffect(() => {
-      prevOpenRef.current = open;
-    }, [open]);
-    const prevOpen = prevOpenRef.current;
-    useEffect(() => {
-      if (!open && prevOpen) {
-        form.resetFields();
-      }
-    }, [form, prevOpen, open]);
-  };
-  const ModalForm = ({ open, onCancel }) => {
-    const [form] = Form.useForm();
-    useResetFormOnCloseModal({
-      form,
-      open,
-    });
-    const onOk = () => {
-      form.submit();
-    };
-    return (
-      <Modal
-        title="Thêm nội dung đề xuất"
-        open={open}
-        onOk={onOk}
-        onCancel={onCancel}
-      >
-        <Form form={form} layout="vertical" name="proposalContentForm">
-          <Form.Item
-            name="content"
-            label="Nội dung"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập nội dung",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="agency"
-            label="Đơn vị"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập đơn vị",
-              },
-            ]}
-          >
-            <InputNumber style={{ width: "100%" }} />
-          </Form.Item>
-          <Form.Item
-            name="mass"
-            label="Khối lượng"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập khối lượng",
-              },
-            ]}
-          >
-            <InputNumber style={{ width: "100%" }} />
-          </Form.Item>
-          <Form.Item
-            name="unitPrice"
-            label="Đơn giá"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập đơn giá",
-              },
-            ]}
-          >
-            <InputNumber style={{ width: "100%" }} />
-          </Form.Item>
-          <Form.Item
-            name="totalCost"
-            label="Thành tiền"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập thành tiền",
-              },
-            ]}
-          >
-            <InputNumber style={{ width: "100%" }} />
-          </Form.Item>
-          <Form.Item name="descripton" label="Ghi chú">
-            <Input />
-          </Form.Item>
-        </Form>
-      </Modal>
-    );
-  };
-
   const handleClear = () => {
     signatureRef.current.clear();
   };
@@ -870,7 +759,7 @@ const Proposal = () => {
                         id="Input3"
                         rows="5"
                       ></textarea>
-                      <Form.Item name="file" label="Tài liệu">
+                      <Form.Item name="file" label="Tài liệu" required>
                         <Dragger name="file" customRequest={customRequest}>
                           <p className="ant-upload-drag-icon">
                             <InboxOutlined />
@@ -880,51 +769,6 @@ const Proposal = () => {
                           </p>
                         </Dragger>
                       </Form.Item>
-                      <Form.Item name="proposalContent" hidden />
-                      <Form.Item
-                        label="Nội dung đề xuất"
-                        shouldUpdate={(prevValues, curValues) =>
-                          prevValues.users !== curValues.users
-                        }
-                      >
-                        {({ getFieldValue }) => {
-                          const proposalContent =
-                            getFieldValue("proposalContent") || [];
-                          return proposalContent.length ? (
-                            <>
-                              <ul>
-                                {proposalContent.map((proposal, index) => (
-                                  <li key={index} className="proposalContent">
-                                    {`${index + 1} - ${proposal?.content} - ${
-                                      proposal?.agency
-                                    } - ${proposal?.mass} - ${
-                                      proposal?.unitPrice
-                                    } - ${proposal?.totalCost} - ${
-                                      proposal?.descripton
-                                    }`}
-                                  </li>
-                                ))}
-                              </ul>
-                              <Button htmlType="button" onClick={showUserModal}>
-                                Thêm nội dung
-                              </Button>
-                            </>
-                          ) : (
-                            <div>
-                              <Typography.Text
-                                className="ant-form-text"
-                                type="secondary"
-                              >
-                                ( <SmileOutlined /> Chưa có nội dung )
-                              </Typography.Text>
-                              <Button htmlType="button" onClick={showUserModal}>
-                                Thêm nội dung
-                              </Button>
-                            </div>
-                          );
-                        }}
-                      </Form.Item>
-
                       <Form.Item label="Chữ ký">
                         {signatureDataUrl && (
                           <div>
@@ -952,7 +796,6 @@ const Proposal = () => {
                       </Space>
                     </Form.Item>
                   </Form>
-                  <ModalForm open={open} onCancel={hideUserModal} />
                 </Form.Provider>
               </Drawer>
             </Col>
