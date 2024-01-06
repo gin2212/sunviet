@@ -120,3 +120,24 @@ img {
   align-items: center;
   color: rgb(73, 70, 70);
 }
+
+.ant-table {
+  overflow-x: auto;
+}
+
+/* Điều chỉnh chiều rộng của cột khi màn hình thu nhỏ */
+@media screen and (max-width: 767px) {
+  .banner {
+    width: 40%;
+  }
+  .ant-table {
+    overflow-x: scroll;
+  }
+  .ant-table .ant-table-cell,
+  .ant-table .ant-table-row {
+    width: 50%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

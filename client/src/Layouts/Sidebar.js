@@ -114,6 +114,7 @@ const Sidebar = ({ collapsed }) => {
         position: "fixed",
         left: 0,
         height: "100vh",
+        overflow: "auto",
       }}
     >
       <div className="logo-vertical">
