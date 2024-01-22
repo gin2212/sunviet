@@ -74,13 +74,7 @@ function Detail() {
     <div>
       <div>
         <div
-          style={{
-            border: "1px solid gray",
-            borderRadius: "0.375rem",
-            width: "50%",
-            margin: "0 auto",
-            padding: "10px",
-          }}
+        className="modal-content"
         >
           <header
             style={{
@@ -113,29 +107,29 @@ function Detail() {
             )}
           </header>
           <main className="m-4 mt-0">
-            <section className="modal-info">
-              <span style={{ width: "20%" }}>ID:</span>
+            <section className="modal-info" style={{flexDirection:"row"}}>
+              <span className="title" style={{width: "20%"}} >ID:</span>
               {proposal?.title}
             </section>
 
             <section className="modal-info">
-              <span style={{ width: "20%" }}>Thời gian tạo:</span>
+              <span className="title">Thời gian tạo:</span>
               {formatDate(proposal?.createdTime)}
             </section>
             <section className="modal-info">
-              <span style={{ width: "20%" }}>Loại đề xuất:</span>
+              <span className="title">Loại đề xuất:</span>
               {proposal?.category}
             </section>
             <section className="modal-info">
-              <span style={{ width: "20%" }}>Nội dung trích yếu:</span>
+              <span className="title">Nội dung trích yếu:</span>
               {proposal?.content}
             </section>
             <section className="modal-info">
-              <span style={{ width: "20%" }}>Người đề xuất:</span>
+              <span className="title">Người đề xuất:</span>
               {proposal?.createdBy?.fullName}
             </section>
             <section className="modal-info">
-              <span style={{ width: "20%" }}>Người duyệt:</span>
+              <span className="title">Người duyệt:</span>
               {proposal?.selectedApprovalProcess?.steps[
                 proposal?.selectedApprovalProcess?.steps?.length - 1
               ] === "Approved" &&
@@ -144,7 +138,7 @@ function Detail() {
                 ]?.approvers?.user?.fullName}
             </section>
             <section className="modal-info">
-              <span style={{ width: "20%" }}>Trạng thái:</span>
+              <span className="title">Trạng thái:</span>
               <Tag
                 color={
                   proposal?.selectedApprovalProcess?.steps[
@@ -175,7 +169,7 @@ function Detail() {
               </Tag>
             </section>
             <section className="modal-info">
-              <span style={{ width: "20%" }}>File đề xuất:</span>
+              <span className="title">File đề xuất:</span>
 
               <a
                 target="_blank"
@@ -185,7 +179,7 @@ function Detail() {
               </a>
             </section>
             <section className="modal-info" style={{ alignItems: "start" }}>
-              <span style={{ width: "20%", marginTop: "16px" }}>
+              <span className="title" style={{marginTop: "16px" }}>
                 Quy trình phê duyệt:
               </span>
               <div>
@@ -225,7 +219,7 @@ function Detail() {
             </section>
 
             <section className="modal-info" style={{ alignItems: "start" }}>
-              <span style={{ width: "20%", marginTop: "16px" }}>
+              <span className="title" style={{ marginTop: "16px" }}>
                 Bình luận:
               </span>
               <div>

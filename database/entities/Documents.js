@@ -6,6 +6,7 @@ const { Schema } = mongoose;
 const documentSchema = new Schema({
   title: { type: String, required: true },
   file: { type: String },
+  saveFile: { type: String },
   content: { type: String },
   authority: { type: String },
   issueDate: { type: Date },

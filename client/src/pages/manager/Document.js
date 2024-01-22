@@ -109,6 +109,7 @@ function Document() {
           authority: item?.authority,
           createdBy: item?.createdBy?.fullName,
           department: item?.department,
+          saveFile: item?.saveFile,
         };
       });
     return data ? data : [];
@@ -166,6 +167,10 @@ function Document() {
       dataIndex: "department",
       render: (_, { department }) =>
         department ? department?.departmentName : "Chưa xử lý",
+    },
+    {
+      title: "Nơi lưu bản cứng",
+      dataIndex: "saveFile",
     },
     {
       title: "Hành động",
@@ -226,6 +231,7 @@ function Document() {
     formData.append("content", contentData);
     formData.append("authority", data.authority);
     formData.append("issueDate", data.issueDate);
+    formData.append("saveFile", data.saveFile);
 
     if (data?.department) {
       formData.append("department", data.department);
@@ -396,11 +402,11 @@ function Document() {
                   </Form.Item>
                   <Form.Item
                     name="authority"
-                    label="Cơ quan chính phủ"
+                    label="Cơ quan ban hành"
                     rules={[
                       {
                         required: true,
-                        message: "Vui lòng nhập cơ quan chính phủ!",
+                        message: "Vui lòng nhập cơ quan ban hành!",
                       },
                       {
                         type: "string",
@@ -409,7 +415,7 @@ function Document() {
                     ]}
                   >
                     <Input
-                      placeholder="Nhập cơ quan chính phủ..."
+                      placeholder="Nhập cơ quan ban hành..."
                       name="authority"
                       allowClear={true}
                     />
@@ -422,9 +428,9 @@ function Document() {
                       <p className="ant-upload-text">Bấm hoặc thả file vào</p>
                     </Dragger>
                   </Form.Item>
-                  <Form.Item name="department" label="cơ quan lưu trữ">
+                  <Form.Item name="department" label="Bộ phận lưu">
                     <Select
-                      placeholder="Chọn một cơ quan lưu trữ..."
+                      placeholder="Chọn một bộ phận lưu..."
                       allowClear
                       showSearch
                       name="department"
@@ -438,6 +444,26 @@ function Document() {
                           );
                         })}
                     </Select>
+                  </Form.Item>
+                  <Form.Item
+                    name="saveFile"
+                    label="Nơi lưu bản cứng"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập nơi lưu bản cứng!",
+                      },
+                      {
+                        type: "string",
+                        min: 1,
+                      },
+                    ]}
+                  >
+                    <Input
+                      placeholder="Nhập nơi lưu bản cứng..."
+                      name="authority"
+                      allowClear={true}
+                    />
                   </Form.Item>
                   <div className="ant-col ant-form-item-label">
                     <label

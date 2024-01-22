@@ -273,13 +273,6 @@ const Roles = () => {
                 </Row>
                 <Form.Item className="mt-3">
                   <Space>
-                    <Button
-                      type="primary"
-                      htmlType="button"
-                      onClick={() => handleSearch()}
-                    >
-                      Tìm kiếm
-                    </Button>
                     <Button type="primary" onClick={handleNewRole}>
                       Tạo mới
                     </Button>
